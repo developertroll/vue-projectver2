@@ -1,26 +1,40 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <BasicLayout @menuSelect="handleSelect">
+      <MainContent :currentMenu="currentMenu" />
+    </BasicLayout>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import BasicLayout from "./components/layout/BasicLayout.vue";
+import MainContent from "./components/MainContent.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    BasicLayout,
+    MainContent,
+  },
+  data() {
+    return {
+      currentMenu: {
+        label: "일정관리 시스템",
+        index: "MainPage",
+        path: "layout",
+      },
+    };
+  },
+
+  methods: {
+    handleSelect(item) {
+      this.currentMenu = {
+        label: item.label,
+        index: item.index,
+        path: item.path,
+      };
+    },
+  },
+};
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>

@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+}
+#app {
+  height: 100%;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.rightSideButtons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.CenterButtons {
+  display: flex;
+  justify-content: center;
+  margin-left: auto;
+  margin-bottom: 1rem;
+}
