@@ -26,7 +26,9 @@
     </el-form>
   </div>
   <div v-if="active === 1">
-    <el-form><MemberTransfer @save="saveMember" /> </el-form>
+    <el-form
+      ><MemberTransfer @save="saveMember" /><CreateApprovalLine />
+    </el-form>
   </div>
   <div v-if="active === 2">
     <el-form> </el-form>
@@ -37,10 +39,12 @@
 </template>
 <script>
 import MemberTransfer from "@/components/common/memberTransfer.vue";
+import CreateApprovalLine from "@/components/common/createApprovalLine.vue";
 export default {
   name: "CreatePlan",
   components: {
     MemberTransfer,
+    CreateApprovalLine,
   },
   data() {
     return {

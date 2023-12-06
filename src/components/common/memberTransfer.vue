@@ -8,7 +8,7 @@
     />
   </div>
   <div class="CenterButtons">
-    <el-button type="primary">저장</el-button>
+    <el-button type="primary" @click="saveMember">저장</el-button>
     <el-button>취소</el-button>
   </div>
 </template>
@@ -27,7 +27,7 @@ export default {
     };
   },
   methods: {
-    save() {
+    saveMember() {
       this.$emit("save", this.member);
     },
   },

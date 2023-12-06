@@ -1,7 +1,29 @@
 import { shallowReactive } from "vue";
 
 export const Member = shallowReactive({
-  List: [],
+  List: [
+    {
+      index: 0,
+      name: "김철수",
+      email: "FeWater@test.test",
+      rank: 0,
+      department: 0,
+    },
+    {
+      index: 1,
+      name: "이영희",
+      email: "zeroFlower@test.test",
+      rank: 1,
+      department: 0,
+    },
+    {
+      index: 2,
+      name: "박영수",
+      email: "ZeroWater@test.test",
+      rank: 1,
+      department: 1,
+    },
+  ],
   template: {
     index: "",
     name: "",
@@ -48,5 +70,32 @@ export const Member = shallowReactive({
       list.push(member);
     });
     return list;
+  },
+  CallTeamTree() {
+    let list = [];
+    // 부서별로 나누고, 각각의 부서 안에서 rank가 높을수록 앞으로 오도록 정렬
+    for (const department in this.departmentTranslate) {
+      let departmentList = this.List.filter(
+        (el) => el.department === Number(department)
+      );
+      const treeData = {
+        label: this.departmentTranslate[department],
+        children: [],
+      };
+      departmentList
+        .sort((a, b) => b.rank - a.rank)
+        .forEach((el) => {
+          const member = {
+            label: `${el.name}(${this.rankTranslate[el.rank]})`,
+            key: el.index,
+          };
+          treeData.children.push(member);
+        });
+      list.push(treeData);
+    }
+    return list;
+  },
+  findMemberByIndex(index) {
+    return this.callMembers().find((el) => el.index === index);
   },
 });
