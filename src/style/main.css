@@ -23,6 +23,13 @@ body {
 .CenterButtons {
   display: flex;
   justify-content: center;
-  margin-left: auto;
-  margin-bottom: 1rem;
+  align-items: center;
+  margin: auto;
+}
+
+.borderBox {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 1rem;
 }

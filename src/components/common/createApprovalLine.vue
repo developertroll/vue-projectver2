@@ -1,37 +1,63 @@
 <template lang="">
   <!-- 크게 3가지 파트로 나누어짐. 조직도를 불러와서 선택할 수 있게 하는 왼쪽 창. 선택한 사람들이 결재라인에 들어갈 것이라는 것을 표현하는 창. 2번째 창 위쪽에 자주 쓰는 결재라인을 불러오는 기능. -->
-  <div>
-    <memberTree @onNodeClick="checkedTable" />
+  <div class="borderBox">
+    <div class="rightSideButtons">
+      <el-button type="primary" @click="changeUp">위로</el-button>
+      <el-button type="primary" @click="changeDown">아래로</el-button>
+      <el-button type="primary" @click="clearAll">초기화</el-button>
+      <el-button type="primary" @click="saveLine">결재라인 저장</el-button>
+    </div>
+    <el-row>
+      <el-col :span="4">
+        <memberTree
+          @onNodeClick="checkedTable"
+          ref="memberT"
+          :currentCheck="Checked"
+        />
+      </el-col>
+      <el-col :span="8" class="CenterButtons">
+        <el-button type="primary" :icon="ArrowLeftBold" @click="removeLine" />
+        <el-button type="primary" :icon="ArrowRightBold" @click="addLine" />
+      </el-col>
+      <el-col :span="12">
+        <el-table
+          ref="table"
+          :data="ApprovalLine"
+          @current-change="handleSelect"
+          highlight-current-row
+          table-layout="fixed"
+        >
+          <el-table-column type="index" label=""></el-table-column>
+          <el-table-column prop="name" label="이름"></el-table-column>
+          <el-table-column prop="rank" label="직급"></el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+
+    <div>
+      {{ Checked }}
+      {{ ApprovalLine }}
+      {{ Select }}
+    </div>
+    <div>
+      <el-select v-model="ApprovalLineName" placeholder="자주 쓰는 결재라인">
+        <el-option
+          v-for="item in selectMenu"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
+      <el-button type="primary" @click="loadMenu">불러오기</el-button>
+    </div>
   </div>
-  <div>
-    <el-table
-      :data="Checked"
-      highlight-current-row
-      @current-change="handleSelect"
-    >
-      <el-table-column type="index" label="순서"> </el-table-column>
-      <el-table-column prop="name" label="이름"></el-table-column>
-      <el-table-column prop="rank" label="직급"></el-table-column>
-    </el-table>
-  </div>
-  <div>
-    <el-button type="primary" @click="changeUp">위로</el-button>
-    <el-button type="primary" @click="changeDown">아래로</el-button>
-  </div>
-  <!-- <div>
-    <el-select v-model="ApprovalLineName" placeholder="자주 쓰는 결재라인">
-      <el-option
-        v-for="item in ApprovalLine"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      ></el-option>
-    </el-select>
-  </div> -->
 </template>
 <script>
-import { Member } from "@/components/composables/Member";
+import { ArrowRightBold, ArrowLeftBold } from "@element-plus/icons-vue";
 import memberTree from "./memberTree.vue";
+import { ApprovalLine } from "../composables/ApprovalLine";
+import { ElMessageBox, ElMessage } from "element-plus";
+
 export default {
   name: "CreateApprovalLine",
   components: {
@@ -42,46 +68,127 @@ export default {
       Checked: [],
       ApprovalLine: [],
       ApprovalLineName: "",
-      Select: {},
+      Select: [],
+      ArrowRightBold,
+      ArrowLeftBold,
     };
-  },
-  computed: {
-    interderminate() {
-      if (this.Checked.length > 0) {
-        let tableData = [];
-        this.Checked.forEach((element) => {
-          tableData.push(Member.findMemberByIndex(element.key));
-        });
-        return tableData;
-      } else {
-        return [];
-      }
-    },
   },
   methods: {
     checkedTable(data) {
+      this.Checked = [];
+      this.clearSelect();
       console.log(data);
       this.Checked.push(data);
     },
     handleSelect(data) {
+      if (data === null) {
+        this.Select = [];
+        return;
+      }
+      this.Checked = [];
       console.log(data);
-      this.Select = data;
+      this.Select = [data];
     },
     changeUp() {
-      let index = this.Checked.indexOf(this.Select);
+      if (this.Select.length === 0) {
+        this.showErrorMessage();
+        return;
+      }
+      let index = this.ApprovalLine.indexOf(this.Select[0]);
       if (index > 0) {
-        let temp = this.Checked[index];
-        this.Checked[index] = this.Checked[index - 1];
-        this.Checked[index - 1] = temp;
+        let temp = this.ApprovalLine[index];
+        this.ApprovalLine[index] = this.ApprovalLine[index - 1];
+        this.ApprovalLine[index - 1] = temp;
       }
     },
     changeDown() {
-      let index = this.Checked.indexOf(this.Select);
-      if (index < this.Checked.length - 1) {
-        let temp = this.Checked[index];
-        this.Checked[index] = this.Checked[index + 1];
-        this.Checked[index + 1] = temp;
+      if (this.Select.length === 0) {
+        this.showErrorMessage();
+        return;
       }
+      let index = this.ApprovalLine.indexOf(this.Select[0]);
+      if (index < this.ApprovalLine.length - 1) {
+        let temp = this.ApprovalLine[index];
+        this.ApprovalLine[index] = this.ApprovalLine[index + 1];
+        this.ApprovalLine[index + 1] = temp;
+      }
+    },
+    addLine() {
+      if (this.Checked.length === 0) {
+        this.showErrorMessage();
+        return;
+      }
+      if (
+        this.ApprovalLine.filter((e) => e.index === this.Checked[0].index)
+          .length > 0
+      ) {
+        console.log("이미 존재");
+        return;
+      } else {
+        this.ApprovalLine.push(this.Checked[0]);
+      }
+      this.Checked = [];
+      this.$refs.memberT.clearHighlight();
+      console.log(this.ApprovalLine);
+    },
+    removeLine() {
+      if (this.Select.length === 0) {
+        this.showErrorMessage();
+        return;
+      }
+      let index = this.ApprovalLine.indexOf(this.Select[0]);
+      if (index > -1) {
+        this.ApprovalLine.splice(index, 1);
+      }
+      this.clearSelect();
+    },
+    clearSelect() {
+      this.Select = [];
+      this.$refs.table.setCurrentRow();
+    },
+    clearAll() {
+      this.ApprovalLine = [];
+      this.clearSelect();
+    },
+    saveLine() {
+      ElMessageBox.prompt("결재라인 이름을 입력하세요", "결재라인 저장", {
+        confirmButtonText: "저장",
+        cancelButtonText: "취소",
+        inputPattern: /\S/,
+        inputErrorMessage: "결재라인 이름을 입력하세요",
+      })
+        .then(({ value }) => {
+          ApprovalLine.saveLine(this.ApprovalLine, value);
+          this.$forceUpdate();
+        })
+        .catch(() => {
+          ElMessage({
+            type: "info",
+            message: "취소되었습니다",
+          });
+        });
+    },
+    showErrorMessage() {
+      ElMessage({
+        type: "error",
+        message: "잘못된 접근입니다",
+      });
+    },
+    loadMenu() {
+      if (this.ApprovalLineName === "") {
+        this.showErrorMessage();
+        return;
+      } else {
+        this.ApprovalLine = ApprovalLine.callLine(this.ApprovalLineName);
+      }
+    },
+    saveEmit() {
+      this.$emit("approvalLine", this.ApprovalLine);
+    },
+  },
+  computed: {
+    selectMenu() {
+      return ApprovalLine.callSelectMenu();
     },
   },
 };

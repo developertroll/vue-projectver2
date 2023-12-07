@@ -1,11 +1,40 @@
-import { shallowReactive } from "vue";
-import { Approval } from "./Approval";
-
-export const ApprovalLine = shallowReactive({
+import { reactive } from "vue";
+import { Member } from "./Member";
+export const ApprovalLine = reactive({
   SavedLines: [],
   template: {
     index: "",
     name: "",
     lines: [],
+  },
+  saveLine(Array, title) {
+    let resultLines = [];
+    Array.forEach((el) => {
+      resultLines.push(el.index);
+    });
+    const line = {
+      index: this.SavedLines.length,
+      name: title,
+      lines: resultLines,
+    };
+    this.SavedLines.push(line);
+  },
+  callLine(index) {
+    let resultLines = [];
+    const target = this.SavedLines.find((el) => el.index === index);
+    target.lines.forEach((el) => {
+      resultLines.push(Member.findMemberByIndex(el));
+    });
+    return resultLines;
+  },
+  callSelectMenu() {
+    let result = [];
+    this.SavedLines.forEach((el) => {
+      result.push({
+        value: el.index,
+        label: el.name,
+      });
+    });
+    return result;
   },
 });
