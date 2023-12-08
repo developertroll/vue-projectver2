@@ -1,14 +1,62 @@
 <template lang="">
-  <div></div>
+  <el-table :data="tableData">
+    <el-table-column prop="name" label="이름" />
+    <el-table-column prop="department" label="분야" />
+    <el-table-column label="업무">
+      <template #default="scope">
+        <el-select v-model="scope.row.detail">
+          <el-option
+            v-for="item in getDetailWork(scope.row.department)"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 <script>
+import { Work } from "../composables/Work";
+import { Member } from "../composables/Member";
 export default {
   name: "AllocateWork",
+  data() {
+    return {
+      tableData: [],
+    };
+  },
   props: {
     member: {
       type: Array,
       default: () => [],
     },
+  },
+  computed: {
+    memberData() {
+      const list = [];
+      this.member.forEach((item) => {
+        list.push(Member.findMemberByIndex(item));
+      });
+      return list;
+    },
+  },
+  methods: {
+    getDetailWork(department) {
+      return Work.callDetailedWorkByParent(department);
+    },
+    dataInit() {
+      this.memberData.forEach((item) => {
+        this.tableData.push({
+          name: item.name,
+          department: item.department,
+          detail: "",
+        });
+      });
+    },
+  },
+  mounted() {
+    this.dataInit();
   },
 };
 </script>

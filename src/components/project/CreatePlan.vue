@@ -1,37 +1,24 @@
 <template lang="">
   <el-steps :active="active" finish-status="success">
-    <el-step title="Step 1" />
-    <el-step title="Step 2" />
-    <el-step title="Step 3" />
+    <el-step title="기본 정보" />
+    <el-step title="인원 배정" />
+    <el-step title="업무" />
   </el-steps>
   <!-- step1은 title, desc를 만들고 기한을 정함 -->
   <!-- step2는 참여 인원을 넣고 결재 라인을 만듬 -->
   <!-- step3은 참여 인원의 기존 department를 기반으로 업무를 지정함 -->
   <div v-if="active === 0">
-    <el-form>
-      <el-form-item label="제목">
-        <el-input placeholder="제목을 입력하세요" />
-      </el-form-item>
-      <el-form-item label="설명">
-        <el-input type="textarea" placeholder="설명을 입력하세요" />
-      </el-form-item>
-      <el-form-item label="기한">
-        <el-date-picker
-          type="date"
-          placeholder="기한을 입력하세요"
-          v-model="value1"
-          style="width: 100%"
-        />
-      </el-form-item>
-    </el-form>
+    <generalForm :columns="col" />
   </div>
   <div v-if="active === 1">
     <el-form
-      ><MemberTransfer @save="saveMember" /><CreateApprovalLine />
+      ><MemberTransfer @save="saveMember" /><CreateApprovalLine
+        @approvalLine="saveApp"
+      />
     </el-form>
   </div>
   <div v-if="active === 2">
-    <el-form> </el-form>
+    <AllocateWork :member="form2.member" />
   </div>
   <div>
     <el-button type="primary" @click="active++">다음</el-button>
@@ -40,15 +27,20 @@
 <script>
 import MemberTransfer from "@/components/common/memberTransfer.vue";
 import CreateApprovalLine from "@/components/common/createApprovalLine.vue";
+import generalForm from "@/components/common/generalForm.vue";
+import AllocateWork from "@/components/common/allocateWork.vue";
 export default {
   name: "CreatePlan",
   components: {
     MemberTransfer,
     CreateApprovalLine,
+    generalForm,
+    AllocateWork,
   },
   data() {
     return {
       active: 0,
+      col: ["제목", "설명", "기한"],
       form1: {
         title: "",
         desc: "",
@@ -57,9 +49,18 @@ export default {
       },
       form2: {
         member: [],
-        master: [],
+        ApprovalLine: [],
       },
     };
+  },
+  methods: {
+    saveMember(data) {
+      console.log(data);
+      this.form2.member = data;
+    },
+    saveApp(data) {
+      this.form2.ApprovalLine = data;
+    },
   },
 };
 </script>

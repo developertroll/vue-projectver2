@@ -2,8 +2,17 @@
   <!-- 크게 3가지 파트로 나누어짐. 조직도를 불러와서 선택할 수 있게 하는 왼쪽 창. 선택한 사람들이 결재라인에 들어갈 것이라는 것을 표현하는 창. 2번째 창 위쪽에 자주 쓰는 결재라인을 불러오는 기능. -->
   <div class="borderBox">
     <div class="rightSideButtons">
-      <el-button type="primary" @click="changeUp">위로</el-button>
-      <el-button type="primary" @click="changeDown">아래로</el-button>
+      <el-select v-model="ApprovalLineName" placeholder="자주 쓰는 결재라인">
+        <el-option
+          v-for="item in selectMenu"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
+      <el-button type="primary" @click="loadMenu">불러오기</el-button>
+    </div>
+    <div class="rightSideButtons">
       <el-button type="primary" @click="clearAll">초기화</el-button>
       <el-button type="primary" @click="saveLine">결재라인 저장</el-button>
     </div>
@@ -18,6 +27,8 @@
       <el-col :span="8" class="CenterButtons">
         <el-button type="primary" :icon="ArrowLeftBold" @click="removeLine" />
         <el-button type="primary" :icon="ArrowRightBold" @click="addLine" />
+        <el-button type="primary" @click="changeUp" :icon="ArrowUpBold" />
+        <el-button type="primary" @click="changeDown" :icon="ArrowDownBold" />
       </el-col>
       <el-col :span="12">
         <el-table
@@ -34,32 +45,30 @@
       </el-col>
     </el-row>
 
-    <div>
+    <!-- <div>
       {{ Checked }}
       {{ ApprovalLine }}
       {{ Select }}
-    </div>
-    <div>
-      <el-select v-model="ApprovalLineName" placeholder="자주 쓰는 결재라인">
-        <el-option
-          v-for="item in selectMenu"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        ></el-option>
-      </el-select>
-      <el-button type="primary" @click="loadMenu">불러오기</el-button>
+    </div> -->
+    <div class="rightSideButtons">
+      <el-button type="primary" @click="saveEmit">저장</el-button>
     </div>
   </div>
 </template>
 <script>
-import { ArrowRightBold, ArrowLeftBold } from "@element-plus/icons-vue";
+import {
+  ArrowRightBold,
+  ArrowLeftBold,
+  ArrowUpBold,
+  ArrowDownBold,
+} from "@element-plus/icons-vue";
 import memberTree from "./memberTree.vue";
 import { ApprovalLine } from "../composables/ApprovalLine";
 import { ElMessageBox, ElMessage } from "element-plus";
 
 export default {
   name: "CreateApprovalLine",
+  emits: ["approvalLine"],
   components: {
     memberTree,
   },
@@ -71,6 +80,8 @@ export default {
       Select: [],
       ArrowRightBold,
       ArrowLeftBold,
+      ArrowUpBold,
+      ArrowDownBold,
     };
   },
   methods: {

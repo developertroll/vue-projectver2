@@ -16,6 +16,7 @@
 import { Member } from "@/components/composables/Member";
 export default {
   name: "MemberTransfer",
+  emits: ["save"],
   computed: {
     memberData() {
       return Member.callTransferMember();
