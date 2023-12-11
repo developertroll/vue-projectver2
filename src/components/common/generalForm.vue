@@ -4,10 +4,14 @@
       <el-input v-if="item !== '기한'" v-model="form[item]" />
 
       <el-date-picker
-        type="date"
+        type="daterange"
         placeholder="기한을 입력하세요"
         v-model="form[item]"
-        style="width: 100%"
+        range-seperator="~"
+        start-placeholder="시작일"
+        end-placeholder="종료일"
+        value-format="YYYY-MM-DD"
+        format="YYYY/MM/DD"
         v-else
       />
     </el-form-item>
@@ -23,11 +27,16 @@ export default {
       form: [],
     };
   },
+  emits: ["saveForm"],
   props: {
     columns: {
       type: Array,
       default: () => [],
       required: true,
+    },
+    parentData: {
+      type: Object,
+      default: () => {},
     },
   },
   computed: {
@@ -52,6 +61,9 @@ export default {
   },
   mounted() {
     this.form = this.formData;
+    if (this.parentData) {
+      this.form = this.parentData;
+    }
   },
 };
 </script>

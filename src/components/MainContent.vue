@@ -9,12 +9,16 @@
       </div>
     </template>
     <div>
-      <component :is="targetComponent" />
+      <component
+        :is="targetComponent"
+        @backToMain="backToMain"
+        @callFinish="callFinish"
+      />
     </div>
   </el-card>
 </template>
 <script>
-import { shallowRef, defineAsyncComponent } from "vue";
+import { shallowRef, defineAsyncComponent, computed } from "vue";
 export default {
   name: "MainContent",
   props: {
@@ -30,11 +34,17 @@ export default {
       },
     },
   },
+  provide() {
+    return {
+      finishType: computed(() => this.finishType),
+    };
+  },
   data() {
     return {
       targetComponent: shallowRef(null),
       handlerComponents: null,
       handlerExecuted: false,
+      finishType: null,
     };
   },
   watch: {
@@ -56,6 +66,36 @@ export default {
       );
       this.handlerComponents = item;
       this.hanlderExecuted = true;
+    },
+    backToMain(item) {
+      switch (item) {
+        case "MainPage":
+          this.targetComponent = defineAsyncComponent(() =>
+            import(`./layout/MainPage.vue`)
+          );
+          this.hanlderExecuted = false;
+          break;
+        case "ProjectPlan":
+          this.targetComponent = defineAsyncComponent(() =>
+            import(`./project/ProjectPlan.vue`)
+          );
+          this.hanlderExecuted = false;
+          break;
+        // case "org":
+        //   this.targetComponent = defineAsyncComponent(() =>
+        //     import(`./layout/org.vue`)
+        //   );
+        //   this.hanlderExecuted = false;
+        //   break;
+        default:
+          break;
+      }
+    },
+    callFinish(item) {
+      this.finishType = item;
+      this.targetComponent = defineAsyncComponent(() =>
+        import(`./layout/finishedPage.vue`)
+      );
     },
   },
 };

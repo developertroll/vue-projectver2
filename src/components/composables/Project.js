@@ -1,8 +1,10 @@
 import { shallowReactive } from "vue";
-import { Work } from "./Work";
-
+import { Member } from "./Member";
+import { Approval } from "./Approval";
 export const Project = shallowReactive({
-  List: [],
+  List: localStorage.getItem("projectList")
+    ? JSON.parse(localStorage.getItem("projectList"))
+    : [],
   template: {
     index: "",
     title: "",
@@ -10,9 +12,25 @@ export const Project = shallowReactive({
     start_date: "",
     end_date: "",
     master: "",
-    members: [],
+    member: [],
+    work: [],
+    status: "",
   },
   createProject(item) {
-    this.List.push(item);
+    const newProject = {
+      ...item,
+      index: this.List.length,
+      master: Member.currentMember,
+      status: "대기",
+    };
+    this.List.push(newProject);
+    Approval.createApproval(newProject);
+    localStorage.setItem("projectList", JSON.stringify(this.List));
+  },
+  callProjectList() {
+    return this.List;
+  },
+  findProjectByIndex(index) {
+    return this.List.find((el) => el.index === index);
   },
 });

@@ -1,7 +1,9 @@
 import { reactive } from "vue";
 import { Member } from "./Member";
 export const ApprovalLine = reactive({
-  SavedLines: [],
+  SavedLines: localStorage.getItem("approvalLine")
+    ? JSON.parse(localStorage.getItem("approvalLine"))
+    : [],
   template: {
     index: "",
     name: "",
@@ -18,6 +20,7 @@ export const ApprovalLine = reactive({
       lines: resultLines,
     };
     this.SavedLines.push(line);
+    localStorage.setItem("approvalLine", JSON.stringify(this.SavedLines));
   },
   callLine(index) {
     let resultLines = [];

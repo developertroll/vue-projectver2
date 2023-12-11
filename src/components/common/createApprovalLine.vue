@@ -13,44 +13,55 @@
       <el-button type="primary" @click="loadMenu">불러오기</el-button>
     </div>
     <div class="rightSideButtons">
+      <el-button type="primary" @click="changeUp"
+        ><el-icon><ArrowUpBold /></el-icon
+      ></el-button>
+      <el-button type="primary" @click="changeDown"
+        ><el-icon><ArrowDownBold /></el-icon
+      ></el-button>
       <el-button type="primary" @click="clearAll">초기화</el-button>
       <el-button type="primary" @click="saveLine">결재라인 저장</el-button>
     </div>
-    <el-row>
-      <el-col :span="4">
-        <memberTree
-          @onNodeClick="checkedTable"
-          ref="memberT"
-          :currentCheck="Checked"
-        />
+    <el-row class="card-box">
+      <el-col :span="6">
+        <el-card shadow="never" class="card-box-1">
+          <memberTree
+            @onNodeClick="checkedTable"
+            ref="memberT"
+            :currentCheck="Checked"
+          />
+        </el-card>
       </el-col>
       <el-col :span="8" class="CenterButtons">
-        <el-button type="primary" :icon="ArrowLeftBold" @click="removeLine" />
-        <el-button type="primary" :icon="ArrowRightBold" @click="addLine" />
-        <el-button type="primary" @click="changeUp" :icon="ArrowUpBold" />
-        <el-button type="primary" @click="changeDown" :icon="ArrowDownBold" />
+        <el-button type="primary" @click="removeLine"
+          ><el-icon><ArrowLeftBold /></el-icon
+        ></el-button>
+        <el-button type="primary" @click="addLine"
+          ><el-icon><ArrowRightBold /></el-icon
+        ></el-button>
       </el-col>
-      <el-col :span="12">
-        <el-table
-          ref="table"
-          :data="ApprovalLine"
-          @current-change="handleSelect"
-          highlight-current-row
-          table-layout="fixed"
-        >
-          <el-table-column type="index" label=""></el-table-column>
-          <el-table-column prop="name" label="이름"></el-table-column>
-          <el-table-column prop="rank" label="직급"></el-table-column>
-        </el-table>
+      <el-col :span="10">
+        <el-card shadow="never">
+          <el-table
+            ref="table"
+            :data="ApprovalLine"
+            @current-change="handleSelect"
+            highlight-current-row
+            table-layout="fixed"
+          >
+            <el-table-column type="index" label=""></el-table-column>
+            <el-table-column prop="name" label="이름"></el-table-column>
+            <el-table-column prop="rank" label="직급"></el-table-column>
+          </el-table>
+        </el-card>
       </el-col>
     </el-row>
-
     <!-- <div>
       {{ Checked }}
       {{ ApprovalLine }}
       {{ Select }}
     </div> -->
-    <div class="rightSideButtons">
+    <div class="CenterButtons">
       <el-button type="primary" @click="saveEmit">저장</el-button>
     </div>
   </div>
@@ -71,6 +82,16 @@ export default {
   emits: ["approvalLine"],
   components: {
     memberTree,
+    ArrowDownBold,
+    ArrowUpBold,
+    ArrowLeftBold,
+    ArrowRightBold,
+  },
+  props: {
+    parentData: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -78,10 +99,6 @@ export default {
       ApprovalLine: [],
       ApprovalLineName: "",
       Select: [],
-      ArrowRightBold,
-      ArrowLeftBold,
-      ArrowUpBold,
-      ArrowDownBold,
     };
   },
   methods: {
@@ -194,7 +211,14 @@ export default {
       }
     },
     saveEmit() {
-      this.$emit("approvalLine", this.ApprovalLine);
+      const result = [];
+      this.ApprovalLine.forEach((item) => {
+        result.push({
+          index: item.index,
+          order: this.ApprovalLine.indexOf(item),
+        });
+      });
+      this.$emit("approvalLine", result);
     },
   },
   computed: {
@@ -202,6 +226,24 @@ export default {
       return ApprovalLine.callSelectMenu();
     },
   },
+  mounted() {
+    if (this.parentData && this.parentData.length > 0) {
+      this.ApprovalLine.push(
+        this.parentData.map((item) => {
+          return item.index;
+        })
+      );
+    }
+  },
 };
 </script>
-<style lang=""></style>
+<style scoped>
+.card-box {
+  display: flex;
+  height: 100%;
+  border: 1px solid #ebeef5;
+}
+.card-box-1 {
+  height: 100%;
+}
+</style>

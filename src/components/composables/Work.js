@@ -80,4 +80,31 @@ export const Work = shallowReactive({
     });
     return result;
   },
+  indexifyDetail(member) {
+    let result = "";
+    // member의 departmemnt 와 detail을 합쳐 detailedWorkTypeList에서 찾아 detail의 index를 반환
+    this.detailWorkTypeList.forEach((el) => {
+      if (el.parent === member.department) {
+        el.detailList.forEach((detail, index) => {
+          if (detail === member.detail) {
+            result = index;
+          }
+        });
+      }
+    });
+    return result;
+  },
+  deIndexifyDetail(member, index) {
+    let result = "";
+    this.detailWorkTypeList.forEach((el) => {
+      if (el.parent === member.department) {
+        el.detailList.forEach((detail, i) => {
+          if (i === index) {
+            result = detail;
+          }
+        });
+      }
+    });
+    return result;
+  },
 });

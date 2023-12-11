@@ -15,12 +15,17 @@
       </template>
     </el-table-column>
   </el-table>
+  <div class="CenterButtons">
+    <el-button type="primary" @click="saveEmit">저장</el-button>
+    <el-button @click="clear">취소</el-button>
+  </div>
 </template>
 <script>
 import { Work } from "../composables/Work";
 import { Member } from "../composables/Member";
 export default {
   name: "AllocateWork",
+  emits: ["saveWork"],
   data() {
     return {
       tableData: [],
@@ -40,6 +45,9 @@ export default {
       });
       return list;
     },
+    checkFull() {
+      return this.tableData.every((item) => item.detail !== "");
+    },
   },
   methods: {
     getDetailWork(department) {
@@ -53,6 +61,24 @@ export default {
           detail: "",
         });
       });
+    },
+    saveEmit() {
+      if (this.checkFull) {
+        let list = [];
+        this.tableData.forEach((item) => {
+          list.push(Work.indexifyDetail(item));
+        });
+        this.$emit("saveWork", list);
+      } else {
+        this.$message({
+          message: "업무를 모두 배정해주세요",
+          type: "warning",
+        });
+      }
+    },
+    clear() {
+      this.tableData = [];
+      this.dataInit();
     },
   },
   mounted() {

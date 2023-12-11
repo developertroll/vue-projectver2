@@ -45,7 +45,9 @@ export default {
           label: "결재",
           index: "0",
           icon: "Document",
-          submenus: [{ label: "결재", index: "org", path: "org" }],
+          submenus: [
+            { label: "결재", index: "ApprovalMain", path: "approval" },
+          ],
         },
         {
           label: "프로젝트",
