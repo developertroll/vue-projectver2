@@ -8,7 +8,11 @@
         <memberTable :parentData="value" />
       </div>
       <div v-else-if="key === 'ApprovalLine'" class="borderBox">
-        <memberTable :parentData="value" :ApprovalCheck="true" />
+        <memberTable
+          :parentData="value"
+          :ApprovalCheck="true"
+          :parentIdx="projectIndex"
+        />
       </div>
       <div v-else-if="key === 'work'" class="borderBox">
         <WorkTable :parentMember="project.member" :parentWork="value" />
@@ -21,6 +25,7 @@
 import memberTable from "@/components/common/memberTable.vue";
 import WorkTable from "@/components/common/WorkTable.vue";
 import { Project } from "../composables/Project";
+import { Member } from "../composables/Member";
 export default {
   name: "showProject",
   components: {
@@ -38,7 +43,7 @@ export default {
     },
     projectIndex: {
       type: Number,
-      default: 0,
+      default: null,
     },
   },
   data() {
@@ -62,6 +67,8 @@ export default {
       if (this.isSaved) {
         const result = Project.findProjectByIndex(this.projectIndex);
         const { index, ...newResult } = result;
+        console.log(newResult);
+        newResult.master = Member.findMemberByIndex(newResult.master).name;
         this.project = newResult;
         console.log(index);
       }

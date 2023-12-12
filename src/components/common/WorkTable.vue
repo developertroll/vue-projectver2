@@ -1,9 +1,14 @@
 <template lang="">
   <div>
-    <el-table :data="tableData">
+    <el-table :data="tableData" border>
       <el-table-column prop="name" label="이름" />
       <el-table-column prop="department" label="분야" />
       <el-table-column prop="detail" label="업무" />
+      <el-table-column
+        prop="status"
+        label="상태"
+        v-if="parentProject !== null"
+      />
     </el-table>
   </div>
 </template>
@@ -18,6 +23,10 @@ export default {
     };
   },
   props: {
+    parentProject: {
+      type: Number,
+      default: null,
+    },
     parentWork: {
       type: Array,
       default: () => [],
@@ -52,12 +61,23 @@ export default {
           name: item.name,
           department: item.department,
           detail: Work.deIndexifyDetail(item, item.detail),
+          referenceIndex: item.index,
         });
       });
     },
   },
   mounted() {
     this.WorkData();
+  },
+  watch: {
+    parentProject() {
+      this.tableData.forEach((el) => {
+        el.status = Work.getStatusByProjectAndMember(
+          this.parentProject,
+          el.referenceIndex
+        );
+      });
+    },
   },
 };
 </script>

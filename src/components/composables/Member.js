@@ -98,5 +98,11 @@ export const Member = shallowReactive({
   findMemberByIndex(index) {
     return this.callMembers().find((el) => el.index === index);
   },
-  currentMember: "김철수",
+  currentMember: 0,
+  setCurrentMember(index) {
+    this.currentMember = index;
+  },
+  getCurrentMember() {
+    return Member.findMemberByIndex(Member.currentMember).name;
+  },
 });

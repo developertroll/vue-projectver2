@@ -57,6 +57,14 @@ export default {
             { label: "프로젝트 계획", index: "ProjectPlan", path: "project" },
           ],
         },
+        {
+          label: "개발자 체크",
+          index: "2",
+          icon: "Briefcase",
+          submenus: [
+            { label: "로그인 수정", index: "changeCurrent", path: "dev" },
+          ],
+        },
       ],
     });
     const handleSelect = (item) => {

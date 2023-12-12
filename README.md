@@ -62,6 +62,12 @@ CreatePlan 페이지 완성. 이제 프로젝트와 결재라인 만들어지는
 밥먹고 와서 결재 생성 최적화 완료. 이제 결재라인을 읽고 자동으로 모든 필요한 결재가 만들어지게 되었음. 겸사겸사 CreatePlan 페이지에서 뒤로 돌아갔을때 기존 데이터가 남아있도록 처리. 코드 상으로는 처리가 됬으니 이제 결재 메커니즘과 페이지를 만들면 됨.
 ```
 
+### 20231212 일지
+
+```
+결재라인 관련 코드 작성 및 페이지 작성 완료. 업무가 저장되도록 코드는 작성 끝냈고 이제 이 업무가 보여지는 환경인 WorkTable(작업완), CreateProgress(업무보고, 작업중) 작업해야함. CreateProgress는 제출할 시 finishPage로 이동하도록 해서 결재라인이 만들어지게 할 거임. ApprovalTable이 현재 반응형이 아니어서 차후 수정해야함.
+```
+
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).

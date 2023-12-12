@@ -1,41 +1,23 @@
 <template lang="">
-  <el-table :data="tableData">
-    <el-table-column type="index" />
-    <el-table-column prop="type" label="종류" />
-    <el-table-column prop="writer" label="요청자" />
-    <el-table-column prop="update" label="요청일" />
-    <el-table-column prop="status" label="상태" />
-  </el-table>
+  <el-tabs type="border-card">
+    <el-tab-pane label="진행중인 결재">
+      <ApprovalTable :parentStatus="'결재요청'" />
+    </el-tab-pane>
+    <el-tab-pane label="대기중인 결재">
+      <ApprovalTable :parentStatus="'대기'" />
+    </el-tab-pane>
+    <el-tab-pane label="완료된 결재">
+      <ApprovalTable :parentStatus="'결재완료'" />
+    </el-tab-pane>
+  </el-tabs>
+  <!-- 이 페이지는 탭 기능을 통해 현재 진행중인 결재, 대기중인 결재, 완료된 결재를 따로 볼 수 있게 만들 예정 -->
 </template>
 <script>
-import { Approval } from "../composables/Approval";
+import ApprovalTable from "./ApprovalTable.vue";
 export default {
   name: "ApprovalMain",
-  computed: {
-    approvalData() {
-      return Approval.callApprovalList();
-    },
-  },
-  data() {
-    return {
-      tableData: [],
-    };
-  },
-  methods: {
-    tableInit() {
-      this.approvalData.forEach((item) => {
-        this.tableData.push({
-          type: item.parentType,
-          writer: item.writer,
-          update: item.update,
-          status: item.status,
-          referenceIndex: item.index,
-        });
-      });
-    },
-  },
-  mounted() {
-    this.tableInit();
+  components: {
+    ApprovalTable,
   },
 };
 </script>

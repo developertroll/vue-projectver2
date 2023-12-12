@@ -1,7 +1,10 @@
 import { shallowReactive } from "vue";
-
+import { Member } from "./Member";
+import moment from "moment";
 export const Work = shallowReactive({
-  WorkList: [],
+  WorkList: localStorage.getItem("workList")
+    ? JSON.parse(localStorage.getItem("workList"))
+    : [],
   template: {
     index: "",
     member: "",
@@ -11,6 +14,7 @@ export const Work = shallowReactive({
     deadline: "",
     update: "",
     status: "",
+    detail: "",
   },
   WorkTypeList: [
     {
@@ -106,5 +110,32 @@ export const Work = shallowReactive({
       }
     });
     return result;
+  },
+  createWork(project) {
+    try {
+      project.member.forEach((el, index) => {
+        const newWork = {
+          index: this.WorkList.length,
+          member: el,
+          master: project.master,
+          project: project.index,
+          type: Member.findMemberByIndex(el).department,
+          detail: project.work[index],
+          deadline: project.end_date,
+          update: moment().format("YYYY-MM-DD"),
+          status: "진행",
+        };
+        this.WorkList.push(newWork);
+      });
+      localStorage.setItem("workList", JSON.stringify(this.WorkList));
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  getStatusByProjectAndMember(project, member) {
+    const target = this.WorkList.find(
+      (el) => el.project === project.index && el.member === member.index
+    );
+    return target.status;
   },
 });
