@@ -27,10 +27,28 @@ export const Project = shallowReactive({
     Approval.createApproval(newProject);
     localStorage.setItem("projectList", JSON.stringify(this.List));
   },
-  callProjectList() {
-    return this.List;
+  EditProject(index, project) {
+    const target = this.findProjectByIndex(index);
+    const changedProject = Object.assign(target, project);
+    changedProject.status = "대기";
+    Approval.createApproval(changedProject);
+    localStorage.setItem("projectList", JSON.stringify(this.List));
+  },
+  callProjectList(status) {
+    return this.List.filter((el) => el.status === status);
   },
   findProjectByIndex(index) {
     return this.List.find((el) => el.index === index);
+  },
+  deleteProject(index) {
+    const target = this.findProjectByIndex(index);
+    target.status = "삭제";
+    localStorage.setItem("projectList", JSON.stringify(this.List));
+    this.List = JSON.parse(localStorage.getItem("projectList"));
+  },
+  getProjectByMember(Member) {
+    return this.List.filter(
+      (el) => el.member.includes(Member) && el.status === "진행"
+    );
   },
 });

@@ -98,10 +98,23 @@ export const Work = shallowReactive({
     });
     return result;
   },
-  deIndexifyDetail(member, index) {
+  deIndexifyDetailWithMember(member, index) {
     let result = "";
     this.detailWorkTypeList.forEach((el) => {
       if (el.parent === member.department) {
+        el.detailList.forEach((detail, i) => {
+          if (i === index) {
+            result = detail;
+          }
+        });
+      }
+    });
+    return result;
+  },
+  deIndexifyDetailWithType(type, index) {
+    let result = "";
+    this.detailWorkTypeList.forEach((el) => {
+      if (el.parent === type) {
         el.detailList.forEach((detail, i) => {
           if (i === index) {
             result = detail;
@@ -132,10 +145,15 @@ export const Work = shallowReactive({
       console.log(e);
     }
   },
-  getStatusByProjectAndMember(project, member) {
-    const target = this.WorkList.find(
-      (el) => el.project === project.index && el.member === member.index
+  getWorkByProjectAndMember(project, memberIndex) {
+    const target = this.WorkList.find((el) => {
+      return el.project === project.index && el.member === memberIndex;
+    });
+    const modifiedTarget = { ...target }; // Create a copy of the target object
+    modifiedTarget.detail = this.deIndexifyDetailWithType(
+      modifiedTarget.type,
+      modifiedTarget.detail
     );
-    return target.status;
+    return modifiedTarget;
   },
 });

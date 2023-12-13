@@ -49,7 +49,11 @@ export default {
         this.parentData.forEach((item) => {
           let member = Member.findMemberByIndex(item.index);
           List[item.order] = member;
-          if (!List[item.order].status && this.parentIdx !== null) {
+          if (
+            !List[item.order].status &&
+            this.parentIdx !== null &&
+            Approval.getStatusByParentIdxMember(this.parentIdx, item.index)
+          ) {
             List[item.order].status = Approval.getStatusByParentIdxMember(
               this.parentIdx,
               item.index

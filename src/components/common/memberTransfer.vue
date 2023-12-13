@@ -22,6 +22,12 @@ export default {
       return Member.callTransferMember();
     },
   },
+  props: {
+    parentData: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
       member: [],
@@ -31,6 +37,11 @@ export default {
     saveMember() {
       this.$emit("save", this.member);
     },
+  },
+  mounted() {
+    if (this.parentData.length !== 0) {
+      this.member = this.parentData;
+    }
   },
 };
 </script>

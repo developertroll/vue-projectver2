@@ -76,6 +76,7 @@ import {
 import memberTree from "./memberTree.vue";
 import { ApprovalLine } from "../composables/ApprovalLine";
 import { ElMessageBox, ElMessage } from "element-plus";
+import { Member } from "../composables/Member";
 
 export default {
   name: "CreateApprovalLine",
@@ -228,11 +229,11 @@ export default {
   },
   mounted() {
     if (this.parentData && this.parentData.length > 0) {
-      this.ApprovalLine.push(
-        this.parentData.map((item) => {
-          return item.index;
-        })
-      );
+      const parentArray = [];
+      this.parentData.forEach((item) => {
+        parentArray.push(Member.findMemberByIndex(item.index));
+      });
+      this.ApprovalLine = parentArray;
     }
   },
 };

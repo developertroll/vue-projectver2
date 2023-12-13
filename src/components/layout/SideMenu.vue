@@ -1,28 +1,30 @@
 <template lang="">
-  <el-row class="tac">
-    <el-col>
-      <el-menu :collapse="isCollapse">
-        <el-sub-menu
-          v-for="menu in menuItem"
-          :key="menu.index"
-          :index="menu.index"
-        >
-          <template #title>
-            <el-icon><component :is="menu.icon" /></el-icon>
-            <span>{{ menu.label }}</span>
-          </template>
-          <el-menu-item
-            @click="handleSelect(item)"
-            v-for="item in menu.submenus"
-            :key="item.index"
-            :index="item.index"
+  <div>
+    <el-row class="tac">
+      <el-col>
+        <el-menu :collapse="isCollapse">
+          <el-sub-menu
+            v-for="menu in menuItem"
+            :key="menu.index"
+            :index="menu.index"
           >
-            {{ item.label }}
-          </el-menu-item>
-        </el-sub-menu>
-      </el-menu>
-    </el-col>
-  </el-row>
+            <template #title>
+              <el-icon><component :is="menu.icon" /></el-icon>
+              <span>{{ menu.label }}</span>
+            </template>
+            <el-menu-item
+              @click="handleSelect(item)"
+              v-for="item in menu.submenus"
+              :key="item.index"
+              :index="item.index"
+            >
+              {{ item.label }}
+            </el-menu-item>
+          </el-sub-menu>
+        </el-menu>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 <script>
 import { Document, Briefcase } from "@element-plus/icons-vue";
@@ -55,6 +57,7 @@ export default {
           icon: "Briefcase",
           submenus: [
             { label: "프로젝트 계획", index: "ProjectPlan", path: "project" },
+            { label: "업무", index: "WorkPage", path: "project" },
           ],
         },
         {

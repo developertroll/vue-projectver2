@@ -1,14 +1,16 @@
 <template>
-  <div class="common-layout">
-    <el-container>
-      <el-header><BasicHeader @menuSelect="handleSelect" /></el-header>
+  <div>
+    <div class="common-layout">
       <el-container>
-        <el-aside width="200px"
-          ><SideMenu @menuSelect="handleSelect"
-        /></el-aside>
-        <el-main><slot></slot></el-main>
+        <el-header><BasicHeader @menuSelect="handleSelect" /></el-header>
+        <el-container>
+          <el-aside width="200px"
+            ><SideMenu @menuSelect="handleSelect"
+          /></el-aside>
+          <el-main><slot></slot></el-main>
+        </el-container>
       </el-container>
-    </el-container>
+    </div>
   </div>
 </template>
 <script>

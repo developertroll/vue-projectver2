@@ -109,6 +109,7 @@ export const Approval = shallowReactive({
         localStorage.setItem("projectList", JSON.stringify(Project.List));
       }
       localStorage.setItem("approvalList", JSON.stringify(this.List));
+      this.List = JSON.parse(localStorage.getItem("approvalList"));
     } catch (e) {
       console.log(e);
     }
@@ -127,13 +128,34 @@ export const Approval = shallowReactive({
   },
   rejectApproval(index) {
     const target = this.List.find((el) => el.index === index);
-    target.status = "반려";
+    const parentProject = Project.findProjectByIndex(target.parentIdx);
+    parentProject.status = "반려";
+    const chainedApproval = this.List.filter(
+      (el) =>
+        el.parentIdx === target.parentIdx &&
+        el.index > target.index &&
+        el.status === "대기"
+    );
+    // chainedApproval과 target을 List에서 삭제
+    chainedApproval.forEach((el) => {
+      this.List.splice(this.List.indexOf(el), 1);
+    });
+    this.List.splice(this.List.indexOf(target), 1);
+    // List내 index 재정렬
+    this.List.forEach((el, index) => {
+      el.index = index;
+    });
+    localStorage.setItem("projectList", JSON.stringify(Project.List));
     localStorage.setItem("approvalList", JSON.stringify(this.List));
+    this.List = JSON.parse(localStorage.getItem("approvalList"));
   },
   getStatusByParentIdxMember(parentIdx, MemberIdx) {
     const target = this.List.find(
       (el) => el.parentIdx === parentIdx && el.master === MemberIdx
     );
+    if (target === undefined) {
+      return "반려";
+    }
     return target.status;
   },
 });

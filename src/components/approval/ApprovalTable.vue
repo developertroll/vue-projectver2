@@ -21,9 +21,9 @@
         </dialogSlot>
       </template>
     </el-table-column>
-    <el-table-column label="작업">
+    <el-table-column label="작업" v-if="parentStatus === '결재요청'">
       <template #default="scope">
-        <div v-if="scope.row.status === '결재요청'">
+        <div>
           <el-button type="success" @click="approve(scope.row.referenceIndex)"
             >승인</el-button
           >
@@ -86,6 +86,7 @@ export default {
     },
     approve(index) {
       Approval.finishApproval(index);
+      this.$forceUpdate;
     },
     reject(index) {
       Approval.rejectApproval(index);
@@ -95,9 +96,12 @@ export default {
     this.tableInit();
   },
   watch: {
-    approvalData() {
-      this.tableData = [];
-      this.tableInit();
+    approvalData: {
+      deep: true,
+      handler() {
+        this.tableData = [];
+        this.tableInit();
+      },
     },
   },
 };

@@ -1,21 +1,23 @@
 <template lang="">
-  <el-card>
-    <template #header>
-      <div v-if="hanlderExecuted">
-        {{ handlerComponents.label }}
+  <div>
+    <el-card>
+      <template #header>
+        <div v-if="hanlderExecuted">
+          {{ handlerComponents.label }}
+        </div>
+        <div v-else>
+          {{ currentMenu.label }}
+        </div>
+      </template>
+      <div>
+        <component
+          :is="targetComponent"
+          @backToMain="backToMain"
+          @callFinish="callFinish"
+        />
       </div>
-      <div v-else>
-        {{ currentMenu.label }}
-      </div>
-    </template>
-    <div>
-      <component
-        :is="targetComponent"
-        @backToMain="backToMain"
-        @callFinish="callFinish"
-      />
-    </div>
-  </el-card>
+    </el-card>
+  </div>
 </template>
 <script>
 import { shallowRef, defineAsyncComponent, computed } from "vue";

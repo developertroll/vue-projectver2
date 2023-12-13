@@ -60,7 +60,7 @@ export default {
         this.tableData.push({
           name: item.name,
           department: item.department,
-          detail: Work.deIndexifyDetail(item, item.detail),
+          detail: Work.deIndexifyDetailWithMember(item, item.detail),
           referenceIndex: item.index,
         });
       });

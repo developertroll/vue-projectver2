@@ -102,7 +102,7 @@ export const Member = shallowReactive({
   setCurrentMember(index) {
     this.currentMember = index;
   },
-  getCurrentMember() {
+  getCurrentMemberName() {
     return Member.findMemberByIndex(Member.currentMember).name;
   },
 });

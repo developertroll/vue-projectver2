@@ -10,6 +10,7 @@
             :key="item.value"
             :label="item.label"
             :value="item.value"
+            v-model="scope.row.detail"
           />
         </el-select>
       </template>
@@ -36,6 +37,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    parentData: {
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
     memberData() {
@@ -54,11 +59,13 @@ export default {
       return Work.callDetailedWorkByParent(department);
     },
     dataInit() {
-      this.memberData.forEach((item) => {
+      this.memberData.forEach((item, index) => {
         this.tableData.push({
           name: item.name,
           department: item.department,
-          detail: "",
+          detail: this.parentData
+            ? Work.deIndexifyDetailWithMember(item, this.parentData[index])
+            : "",
         });
       });
     },
