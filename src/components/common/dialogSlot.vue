@@ -1,18 +1,20 @@
 <template>
   <div>
-    <el-button type="primary" @click="openDialog">{{ title }}</el-button>
+    <div>
+      <el-button type="primary" @click="openDialog">{{ title }}</el-button>
+    </div>
+    <el-dialog v-model="dialogVisible" append-to-body :show-close="false">
+      <template #header>
+        <div class="el-header">
+          <h2>{{ title }}</h2>
+          <el-button @click="closeDialog">닫기</el-button>
+        </div>
+      </template>
+      <template #default>
+        <slot @saveForm="saveForm"></slot>
+      </template>
+    </el-dialog>
   </div>
-  <el-dialog v-model="dialogVisible" append-to-body :show-close="false">
-    <template #header>
-      <div class="el-header">
-        <h2>{{ title }}</h2>
-        <el-button @click="closeDialog">닫기</el-button>
-      </div>
-    </template>
-    <template #default>
-      <slot></slot>
-    </template>
-  </el-dialog>
 </template>
 
 <script>
@@ -35,6 +37,11 @@ export default {
     },
     closeDialog() {
       this.dialogVisible = false;
+    },
+    saveForm(item) {
+      console.log("dialog에서 실행됨");
+      this.$emit("saveForm", item);
+      this.closeDialog();
     },
   },
 };

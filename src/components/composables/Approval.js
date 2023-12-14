@@ -103,10 +103,22 @@ export const Approval = shallowReactive({
         nextApproval.update = moment().format("YYYY-MM-DD");
       } else {
         // 다음 결재가 없는 마지막 결재일때
-        const parentProject = Project.findProjectByIndex(target.parentIdx);
-        parentProject.status = "진행";
-        Work.createWork(parentProject);
-        localStorage.setItem("projectList", JSON.stringify(Project.List));
+        switch (target.parentType) {
+          case "project": {
+            let parentProject = Project.findProjectByIndex(target.parentIdx);
+            parentProject.status = "진행";
+            Work.createWork(parentProject);
+            localStorage.setItem("projectList", JSON.stringify(Project.List));
+            break;
+          }
+          case "work":
+            Work.finishWork(target.parentIdx);
+            break;
+          default: {
+            console.log("error");
+            break;
+          }
+        }
       }
       localStorage.setItem("approvalList", JSON.stringify(this.List));
       this.List = JSON.parse(localStorage.getItem("approvalList"));
@@ -149,13 +161,28 @@ export const Approval = shallowReactive({
     localStorage.setItem("approvalList", JSON.stringify(this.List));
     this.List = JSON.parse(localStorage.getItem("approvalList"));
   },
-  getStatusByParentIdxMember(parentIdx, MemberIdx) {
-    const target = this.List.find(
-      (el) => el.parentIdx === parentIdx && el.master === MemberIdx
-    );
-    if (target === undefined) {
-      return "반려";
+  createWorkApproval(newWork) {
+    try {
+      const targetWork = Work.getWorkByIndex(newWork[0].index);
+      Work.getOriginalWorkByIndex(newWork[0].index).status = "결재요청";
+      const approval = {
+        index: this.List.length,
+        parentIdx: targetWork.index,
+        parentType: "work",
+        title: `${targetWork.member}의 ${targetWork.detail}`,
+        master: targetWork.master,
+        status: "결재요청",
+        writer: targetWork.member,
+        update: moment().format("YYYY-MM-DD"),
+        desc: newWork[0].desc,
+        etc: newWork[0].etc,
+      };
+      this.List.push(approval);
+      Work.refreshWorkList();
+      localStorage.setItem("approvalList", JSON.stringify(this.List));
+      this.List = JSON.parse(localStorage.getItem("approvalList"));
+    } catch (e) {
+      console.log(e);
     }
-    return target.status;
   },
 });

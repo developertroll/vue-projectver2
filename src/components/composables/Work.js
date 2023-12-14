@@ -5,6 +5,10 @@ export const Work = shallowReactive({
   WorkList: localStorage.getItem("workList")
     ? JSON.parse(localStorage.getItem("workList"))
     : [],
+  refreshWorkList() {
+    localStorage.setItem("workList", JSON.stringify(this.WorkList));
+    this.WorkList = JSON.parse(localStorage.getItem("workList"));
+  },
   template: {
     index: "",
     member: "",
@@ -155,5 +159,28 @@ export const Work = shallowReactive({
       modifiedTarget.detail
     );
     return modifiedTarget;
+  },
+  getWorkByIndex(index) {
+    const target = this.WorkList.find((el) => el.index === index);
+    const modifiedTarget = { ...target }; // Create a copy of the target object
+    modifiedTarget.detail = this.deIndexifyDetailWithType(
+      modifiedTarget.type,
+      modifiedTarget.detail
+    );
+    modifiedTarget.member = Member.findMemberByIndex(
+      modifiedTarget.member
+    ).name;
+    modifiedTarget.master = Member.findMemberByIndex(
+      modifiedTarget.master
+    ).name;
+    return modifiedTarget;
+  },
+  getOriginalWorkByIndex(index) {
+    return this.WorkList.find((el) => el.index === index);
+  },
+  finishWork(index) {
+    const target = this.getOriginalWorkByIndex(index);
+    target.status = "완료";
+    this.refreshWorkList();
   },
 });

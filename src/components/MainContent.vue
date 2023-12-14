@@ -83,6 +83,12 @@ export default {
           );
           this.hanlderExecuted = false;
           break;
+        case "WorkPage":
+          this.targetComponent = defineAsyncComponent(() =>
+            import(`./project/WorkPage.vue`)
+          );
+          this.handlerExecuted = false;
+          break;
         // case "org":
         //   this.targetComponent = defineAsyncComponent(() =>
         //     import(`./layout/org.vue`)

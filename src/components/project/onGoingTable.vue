@@ -11,15 +11,31 @@
             <el-table-column prop="status" label="상태" />
             <el-table-column>
               <template #default="scope">
-                <el-button type="primary" @click="makeProgress(scope.row.index)"
-                  >업무 보고</el-button
-                >
+                <dialogSlot :title="'업무보고'" ref="dialog">
+                  <template #default>
+                    <CreateProgress
+                      :parentWork="scope.row.index"
+                      @saveForm="finishProgress"
+                    />
+                  </template>
+                </dialogSlot>
               </template>
             </el-table-column>
           </el-table>
         </template>
       </el-table-column>
-      <el-table-column prop="title" label="제목" />
+      <el-table-column label="제목">
+        <template #default="scope">
+          <dialogSlot :title="scope.row.title">
+            <template #default>
+              <showProject
+                :projectIndex="scope.row.referenceIndex"
+                :isSaved="true"
+              />
+            </template>
+          </dialogSlot>
+        </template>
+      </el-table-column>
       <el-table-column prop="start_date" label="시작일" />
       <el-table-column prop="end_date" label="종료일" />
       <el-table-column prop="status" label="상태" />
@@ -29,8 +45,16 @@
 <script>
 import { Work } from "../composables/Work";
 import { Project } from "../composables/Project";
+import showProject from "../common/showProject.vue";
+import dialogSlot from "../common/dialogSlot.vue";
+import CreateProgress from "./CreateProgress.vue";
 export default {
-  name: "WorkTable",
+  name: "onGoingTable",
+  components: {
+    showProject,
+    dialogSlot,
+    CreateProgress,
+  },
   props: {
     CurrentMember: {
       type: Number,
@@ -54,7 +78,7 @@ export default {
       this.ProjectData.forEach((item) => {
         result.push(Work.getWorkByProjectAndMember(item, this.CurrentMember));
       });
-      console.log(result);
+      console.log(result, "WorkData");
       return result;
     },
   },
@@ -74,6 +98,11 @@ export default {
       } catch (e) {
         console.log(e);
       }
+    },
+    finishProgress(item) {
+      console.log(item, "onGoingTable에서 발생");
+      this.$refs.dialog.closeDialog();
+      this.$emit("finishProgress", item);
     },
   },
   mounted() {

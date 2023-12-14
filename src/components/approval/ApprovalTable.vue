@@ -16,6 +16,12 @@
             <showProject
               :projectIndex="getParentProject(scope.row.referenceIndex)"
               :isSaved="true"
+              v-if="scope.row.type === 'project'"
+            />
+            <generalDescription
+              :parentLabel="translateWorkColumn"
+              :parentData="getParentWork(scope.row.referenceIndex)"
+              v-else-if="scope.row.type === 'work'"
             />
           </template>
         </dialogSlot>
@@ -40,11 +46,14 @@ import dialogSlot from "../common/dialogSlot.vue";
 import { Approval } from "../composables/Approval";
 import showProject from "../common/showProject.vue";
 import { Member } from "../composables/Member";
+import { Work } from "../composables/Work";
+import generalDescription from "../common/generalDescription.vue";
 export default {
   name: "ApprovalTable",
   components: {
     dialogSlot,
     showProject,
+    generalDescription,
   },
   props: {
     parentStatus: {
@@ -67,6 +76,17 @@ export default {
         member: "멤버",
         plan: "일정",
       },
+      translateWorkColumn: {
+        member: "작성자",
+        master: "담당자",
+        type: "분야",
+        deadline: "마감일",
+        update: "갱신일",
+        status: "상태",
+        detail: "업무",
+        desc: "설명",
+        etc: "비고",
+      },
     };
   },
   methods: {
@@ -74,7 +94,9 @@ export default {
       this.approvalData.forEach((item) => {
         this.tableData.push({
           type: item.parentType,
-          writer: Member.findMemberByIndex(item.writer).name,
+          writer: !isNaN(item.writer)
+            ? Member.findMemberByIndex(item.writer).name
+            : item.writer,
           update: item.update,
           status: item.status,
           referenceIndex: item.index,
@@ -90,6 +112,25 @@ export default {
     },
     reject(index) {
       Approval.rejectApproval(index);
+    },
+    getParentWork(index) {
+      try {
+        const targetIndex = this.getParentProject(index);
+        const target = Work.getWorkByIndex(targetIndex);
+        const targetApproval = Approval.findApprovalByIndex(index);
+        Reflect.deleteProperty(target, "index");
+        Reflect.deleteProperty(target, "project");
+        const result = {
+          ...target,
+          desc: targetApproval.desc,
+          etc: targetApproval.etc,
+        };
+        return result;
+        // console.log(index);
+        // index는 삭제를 위해서 필요한 값으로, 삭제 후에는 필요없음
+      } catch (e) {
+        console.log(e);
+      }
     },
   },
   mounted() {
