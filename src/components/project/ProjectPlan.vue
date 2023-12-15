@@ -16,6 +16,9 @@
       <el-tab-pane label="반려된 프로젝트">
         <PlanTable :parentStatus="'반려'" :rejected="true" @edit="openEdit" />
       </el-tab-pane>
+      <el-tab-pane label="완료된 프로젝트">
+        <PlanTable :parentStatus="'완료'" />
+      </el-tab-pane>
     </el-tabs>
     <div v-if="active === 1">
       <CreatePlan @callFinish="callFinish" v-if="editIndex === null" />

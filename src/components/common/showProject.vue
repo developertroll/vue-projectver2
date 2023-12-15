@@ -15,7 +15,11 @@
         />
       </div>
       <div v-else-if="key === 'work'" class="borderBox">
-        <WorkTable :parentMember="project.member" :parentWork="value" />
+        <WorkTable
+          :parentMember="project.member"
+          :parentWork="value"
+          :parentProject="projectIndex"
+        />
       </div>
       <div class="borderBox" v-else>{{ value }}</div>
     </div>
@@ -74,7 +78,7 @@ export default {
       }
     },
   },
-  mounted() {
+  created() {
     this.findSavedByIndex();
   },
 };

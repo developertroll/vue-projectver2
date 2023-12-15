@@ -34,3 +34,11 @@ body {
   padding: 1rem;
   margin: 1rem;
 }
+
+.el-table .table-row-unread {
+  font: bold;
+  --el-table-tr-bg-color: #fef0f0;
+}
+.el-table .table-row-read {
+  --el-table-tr-bg-color: #f0f9eb;
+}

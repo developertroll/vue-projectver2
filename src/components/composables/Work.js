@@ -1,5 +1,6 @@
 import { shallowReactive } from "vue";
 import { Member } from "./Member";
+import { Project } from "./Project";
 import moment from "moment";
 export const Work = shallowReactive({
   WorkList: localStorage.getItem("workList")
@@ -150,37 +151,66 @@ export const Work = shallowReactive({
     }
   },
   getWorkByProjectAndMember(project, memberIndex) {
-    const target = this.WorkList.find((el) => {
-      return el.project === project.index && el.member === memberIndex;
-    });
-    const modifiedTarget = { ...target }; // Create a copy of the target object
-    modifiedTarget.detail = this.deIndexifyDetailWithType(
-      modifiedTarget.type,
-      modifiedTarget.detail
-    );
-    return modifiedTarget;
+    try {
+      const target = this.WorkList.find((el) => {
+        return el.project === project.index && el.member === memberIndex;
+      });
+      const modifiedTarget = { ...target }; // Create a copy of the target object
+      modifiedTarget.detail = this.deIndexifyDetailWithType(
+        modifiedTarget.type,
+        modifiedTarget.detail
+      );
+      return modifiedTarget;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  getWorkByProject(project) {
+    return this.WorkList.filter((el) => el.project === project);
   },
   getWorkByIndex(index) {
-    const target = this.WorkList.find((el) => el.index === index);
-    const modifiedTarget = { ...target }; // Create a copy of the target object
-    modifiedTarget.detail = this.deIndexifyDetailWithType(
-      modifiedTarget.type,
-      modifiedTarget.detail
-    );
-    modifiedTarget.member = Member.findMemberByIndex(
-      modifiedTarget.member
-    ).name;
-    modifiedTarget.master = Member.findMemberByIndex(
-      modifiedTarget.master
-    ).name;
-    return modifiedTarget;
+    try {
+      const target = this.WorkList.find((el) => el.index === index);
+      const modifiedTarget = { ...target }; // Create a copy of the target object
+      modifiedTarget.detail = this.deIndexifyDetailWithType(
+        modifiedTarget.type,
+        modifiedTarget.detail
+      );
+      modifiedTarget.member = Member.findMemberByIndex(
+        modifiedTarget.member
+      ).name;
+      modifiedTarget.master = Member.findMemberByIndex(
+        modifiedTarget.master
+      ).name;
+      return modifiedTarget;
+    } catch (e) {
+      console.log(e);
+    }
   },
   getOriginalWorkByIndex(index) {
     return this.WorkList.find((el) => el.index === index);
   },
-  finishWork(index) {
+  getAllWorkByProject(index) {
+    return this.WorkList.filter((el) => el.project === index);
+  },
+  finishWork(index, desc, etc) {
     const target = this.getOriginalWorkByIndex(index);
     target.status = "완료";
+    target.desc = desc;
+    target.etc = etc;
+    if (
+      this.getAllWorkByProject(target.project).find(
+        (el) => el.status !== "완료"
+      ) === undefined
+    ) {
+      Project.finishProject(target.project);
+    }
     this.refreshWorkList();
+  },
+  getWorkByMemberAndDetailAndProject(member, detail, project) {
+    return this.WorkList.find(
+      (el) =>
+        el.member === member && el.detail === detail && el.project === project
+    );
   },
 });

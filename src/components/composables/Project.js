@@ -1,10 +1,15 @@
 import { shallowReactive } from "vue";
 import { Member } from "./Member";
 import { Approval } from "./Approval";
+import { Alarm } from "./Alarm";
 export const Project = shallowReactive({
   List: localStorage.getItem("projectList")
     ? JSON.parse(localStorage.getItem("projectList"))
     : [],
+  refreshList() {
+    localStorage.setItem("projectList", JSON.stringify(this.List));
+    this.List = JSON.parse(localStorage.getItem("projectList"));
+  },
   template: {
     index: "",
     title: "",
@@ -25,6 +30,10 @@ export const Project = shallowReactive({
     };
     this.List.push(newProject);
     Approval.createApproval(newProject);
+    newProject.member.forEach((el) => {
+      if (el === Member.currentMember) return;
+      Alarm.createAlarm("project", Member.currentMember, el);
+    });
     localStorage.setItem("projectList", JSON.stringify(this.List));
   },
   EditProject(index, project) {
@@ -49,6 +58,18 @@ export const Project = shallowReactive({
   getProjectByMember(Member) {
     return this.List.filter(
       (el) => el.member.includes(Member) && el.status === "진행"
+    );
+  },
+  finishProject(index) {
+    const target = this.findProjectByIndex(index);
+    target.status = "완료";
+    this.refreshList();
+  },
+  getProjectByMemberAndWork(member, work) {
+    return this.List.filter(
+      (el) =>
+        JSON.stringify(el.member) === JSON.stringify(member) &&
+        JSON.stringify(el.work) === JSON.stringify(work)
     );
   },
 });

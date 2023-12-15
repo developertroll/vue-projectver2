@@ -126,8 +126,6 @@ export default {
           etc: targetApproval.etc,
         };
         return result;
-        // console.log(index);
-        // index는 삭제를 위해서 필요한 값으로, 삭제 후에는 필요없음
       } catch (e) {
         console.log(e);
       }

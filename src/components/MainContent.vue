@@ -14,6 +14,7 @@
           :is="targetComponent"
           @backToMain="backToMain"
           @callFinish="callFinish"
+          @AlarmSelect="AlarmSelect"
         />
       </div>
     </el-card>
@@ -68,6 +69,12 @@ export default {
       );
       this.handlerComponents = item;
       this.hanlderExecuted = true;
+    },
+    AlarmSelect(item) {
+      this.openedTab = item;
+      this.targetComponent = defineAsyncComponent(() =>
+        import(`./private/AlarmMain.vue`)
+      );
     },
     backToMain(item) {
       switch (item) {

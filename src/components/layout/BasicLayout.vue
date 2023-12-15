@@ -2,7 +2,9 @@
   <div>
     <div class="common-layout">
       <el-container>
-        <el-header><BasicHeader @menuSelect="handleSelect" /></el-header>
+        <el-header
+          ><BasicHeader @menuSelect="handleSelect" @AlarmSelect="AlarmSelect"
+        /></el-header>
         <el-container>
           <el-aside width="200px"
             ><SideMenu @menuSelect="handleSelect"
@@ -22,10 +24,13 @@ export default {
     BasicHeader,
     SideMenu,
   },
-  emits: ["menuSelect"],
+  emits: ["menuSelect", "AlarmSelect"],
   methods: {
     handleSelect(item) {
       this.$emit("menuSelect", item);
+    },
+    AlarmSelect(item) {
+      this.$emit("AlarmSelect", item);
     },
   },
 };

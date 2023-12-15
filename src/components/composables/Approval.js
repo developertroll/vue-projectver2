@@ -2,6 +2,7 @@ import { shallowReactive } from "vue";
 import moment from "moment";
 import { Project } from "./Project";
 import { Work } from "./Work";
+import { Alarm } from "./Alarm";
 
 export const Approval = shallowReactive({
   List: localStorage.getItem("approvalList")
@@ -46,6 +47,11 @@ export const Approval = shallowReactive({
             update: moment().format("YYYY-MM-DD"),
           };
           this.List.push(approval);
+          Alarm.createAlarm(
+            "approvalRequest",
+            approval.writer,
+            approval.master
+          );
           continue;
         }
         // 0 1 2
@@ -80,6 +86,7 @@ export const Approval = shallowReactive({
     try {
       const target = this.List.find((el) => el.index === index);
       target.status = "결재완료";
+      Alarm.createAlarm("approvalApproved", target.master, target.writer);
       if (
         this.List.find(
           (el) =>
@@ -101,6 +108,11 @@ export const Approval = shallowReactive({
         );
         nextApproval.status = "결재요청";
         nextApproval.update = moment().format("YYYY-MM-DD");
+        Alarm.createAlarm(
+          "approvalRequest",
+          nextApproval.writer,
+          nextApproval.master
+        );
       } else {
         // 다음 결재가 없는 마지막 결재일때
         switch (target.parentType) {
@@ -108,11 +120,17 @@ export const Approval = shallowReactive({
             let parentProject = Project.findProjectByIndex(target.parentIdx);
             parentProject.status = "진행";
             Work.createWork(parentProject);
+            Alarm.createAlarm(
+              "projectApproved",
+              target.master,
+              parentProject.master
+            );
             localStorage.setItem("projectList", JSON.stringify(Project.List));
             break;
           }
           case "work":
-            Work.finishWork(target.parentIdx);
+            Work.finishWork(target.parentIdx, target.desc, target.etc);
+            Alarm.createAlarm("workApproved", target.master, target.writer);
             break;
           default: {
             console.log("error");
@@ -140,8 +158,30 @@ export const Approval = shallowReactive({
   },
   rejectApproval(index) {
     const target = this.List.find((el) => el.index === index);
-    const parentProject = Project.findProjectByIndex(target.parentIdx);
-    parentProject.status = "반려";
+    switch (target.parentType) {
+      case "project": {
+        let parentProject = Project.findProjectByIndex(target.parentIdx);
+        parentProject.status = "반려";
+        Alarm.createAlarm(
+          "approvalRejected",
+          target.master,
+          parentProject.master
+        );
+        localStorage.setItem("projectList", JSON.stringify(Project.List));
+        break;
+      }
+      case "work": {
+        let parentWork = Work.getOriginalWorkByIndex(target.parentIdx);
+        parentWork.status = "진행";
+        Alarm.createAlarm("workRejected", target.master, parentWork.member);
+        Work.refreshWorkList();
+        break;
+      }
+      default: {
+        console.log("error");
+        break;
+      }
+    }
     const chainedApproval = this.List.filter(
       (el) =>
         el.parentIdx === target.parentIdx &&
@@ -157,7 +197,7 @@ export const Approval = shallowReactive({
     this.List.forEach((el, index) => {
       el.index = index;
     });
-    localStorage.setItem("projectList", JSON.stringify(Project.List));
+
     localStorage.setItem("approvalList", JSON.stringify(this.List));
     this.List = JSON.parse(localStorage.getItem("approvalList"));
   },
@@ -184,5 +224,15 @@ export const Approval = shallowReactive({
     } catch (e) {
       console.log(e);
     }
+  },
+  getStatusByParentIdxMember(parentIdx, memberIdx) {
+    const target = this.List.find(
+      (el) => el.parentIdx === parentIdx && el.master === memberIdx
+    );
+    return target.status;
+  },
+  // 이 함수는 업무 결재를 찾을때 사용하기 위해 만들어짐.
+  getApprovalByParentIdx(parentIdx) {
+    return this.List.filter((el) => el.parentIdx === parentIdx);
   },
 });

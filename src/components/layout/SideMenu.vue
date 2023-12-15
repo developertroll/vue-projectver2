@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import { Document, Briefcase } from "@element-plus/icons-vue";
+import { Document, Briefcase, Monitor } from "@element-plus/icons-vue";
 import { reactive, toRefs } from "vue";
 export default {
   name: "SideMenu",
@@ -39,6 +39,7 @@ export default {
   components: {
     Document,
     Briefcase,
+    Monitor,
   },
   setup(props, context) {
     const state = reactive({
@@ -61,8 +62,17 @@ export default {
           ],
         },
         {
-          label: "개발자 체크",
+          label: "개인",
           index: "2",
+          icon: "Monitor",
+          submenus: [
+            { label: "알람", index: "AlarmMain", path: "private" },
+            { label: "메세지", index: "MessengerMain", path: "private" },
+          ],
+        },
+        {
+          label: "개발자 체크",
+          index: "3",
           icon: "Briefcase",
           submenus: [
             { label: "로그인 수정", index: "changeCurrent", path: "dev" },

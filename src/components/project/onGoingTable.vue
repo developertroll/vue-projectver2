@@ -11,11 +11,17 @@
             <el-table-column prop="status" label="상태" />
             <el-table-column>
               <template #default="scope">
-                <dialogSlot :title="'업무보고'" ref="dialog">
+                <dialogSlot :title="dialogTitle(scope.row.status)" ref="dialog">
                   <template #default>
                     <CreateProgress
                       :parentWork="scope.row.index"
                       @saveForm="finishProgress"
+                      v-if="scope.row.status === '진행'"
+                    />
+                    <generalDescription
+                      :parentLabel="descCol"
+                      :parentData="detailData(scope.row.index)"
+                      v-else
                     />
                   </template>
                 </dialogSlot>
@@ -48,12 +54,15 @@ import { Project } from "../composables/Project";
 import showProject from "../common/showProject.vue";
 import dialogSlot from "../common/dialogSlot.vue";
 import CreateProgress from "./CreateProgress.vue";
+import generalDescription from "../common/generalDescription.vue";
+import { Approval } from "../composables/Approval";
 export default {
   name: "onGoingTable",
   components: {
     showProject,
     dialogSlot,
     CreateProgress,
+    generalDescription,
   },
   props: {
     CurrentMember: {
@@ -64,6 +73,10 @@ export default {
   data() {
     return {
       tableData: [],
+      descCol: {
+        desc: "작업내용",
+        etc: "비고",
+      },
     };
   },
   computed: {
@@ -78,7 +91,6 @@ export default {
       this.ProjectData.forEach((item) => {
         result.push(Work.getWorkByProjectAndMember(item, this.CurrentMember));
       });
-      console.log(result, "WorkData");
       return result;
     },
   },
@@ -100,9 +112,30 @@ export default {
       }
     },
     finishProgress(item) {
-      console.log(item, "onGoingTable에서 발생");
       this.$refs.dialog.closeDialog();
       this.$emit("finishProgress", item);
+    },
+    dialogTitle(item) {
+      switch (item) {
+        case "결재요청":
+          return "상세";
+        case "진행":
+          return "업무 보고";
+        case "완료":
+          return "상세";
+        default:
+          return "상세";
+      }
+    },
+    detailData(index) {
+      let target = Work.getWorkByIndex(index);
+      if (target.desc === undefined)
+        target = Approval.getApprovalByParentIdx(index)[0];
+      const result = {
+        desc: target.desc,
+        etc: target.etc,
+      };
+      return result;
     },
   },
   mounted() {

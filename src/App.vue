@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BasicLayout @menuSelect="handleSelect">
+    <BasicLayout @menuSelect="handleSelect" @AlarmSelect="AlarmSelect">
       <MainContent :currentMenu="currentMenu" />
     </BasicLayout>
   </div>
@@ -9,11 +9,17 @@
 <script>
 import BasicLayout from "./components/layout/BasicLayout.vue";
 import MainContent from "./components/MainContent.vue";
+import { computed } from "vue";
 export default {
   name: "App",
   components: {
     BasicLayout,
     MainContent,
+  },
+  provide() {
+    return {
+      openedTab: computed(() => this.openedTab),
+    };
   },
   data() {
     return {
@@ -22,6 +28,7 @@ export default {
         index: "MainPage",
         path: "layout",
       },
+      openedTab: null,
     };
   },
 
@@ -32,6 +39,14 @@ export default {
         index: item.index,
         path: item.path,
       };
+    },
+    AlarmSelect(item) {
+      this.currentMenu = {
+        label: "알람",
+        index: "AlarmMain",
+        path: "private",
+      };
+      this.openedTab = item;
     },
   },
 };
