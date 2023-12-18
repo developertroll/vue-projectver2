@@ -1,5 +1,10 @@
 <template>
-  <QuillEditor v-model:content="content" theme="snow" :readOnly="readOnly" />
+  <div>
+    <QuillEditor v-model:content="content" theme="snow" :readOnly="readOnly" />
+    <QuillEditor v-model:content="content" theme="snow" :readOnly="readOnly" />
+    <el-button type="primary" @click="consoleContent">콘솔</el-button>
+    <el-button type="primary" @click="insertContent">삽입테스트</el-button>
+  </div>
 </template>
 <script>
 export default {
@@ -29,6 +34,9 @@ export default {
     },
     getContent() {
       return this.content;
+    },
+    insertContent() {
+      this.content.insert("\ntest", {});
     },
   },
   watch: {

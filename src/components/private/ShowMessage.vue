@@ -14,29 +14,32 @@
         {{ item.value }}
       </el-descriptions-item>
     </el-descriptions>
-    <el-divider></el-divider>
-    <el-row>
-      <el-col :span="24">
-        <el-card shadow="never">
-          <template #header>
-            <span>{{ title }}</span>
-          </template>
-          <div>
-            <QuillEditor
-              theme="snow"
-              readOnly
-              ref="Editor"
-              @ready="getContent"
-            />
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-    <el-button @click="debug"></el-button>
+    <el-divider content-position="left"><h2>내용</h2></el-divider>
+
+    <el-descriptions col="1" border>
+      <el-descriptions-item label="제목">{{ title }}</el-descriptions-item>
+    </el-descriptions>
+
+    <div class="bigSize">
+      <QuillEditor
+        :options="options"
+        theme="snow"
+        readOnly
+        ref="Editor"
+        @ready="getContent"
+      />
+    </div>
+    <div class="rightSideButtons">
+      <el-button type="primary" @click="reply">답장</el-button>
+      <el-button type="primary" @click="resend">전달</el-button>
+      <el-button type="primary" @click="deleteMessage">삭제</el-button>
+      <el-button type="primary" @click="returnToMain">목록</el-button>
+    </div>
   </div>
 </template>
 <script>
 import { Message } from "@/components/composables/Message";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {
   name: "ShowMessage",
@@ -45,6 +48,11 @@ export default {
       descriptionData: [],
       title: "",
       content: null,
+      options: {
+        modules: {
+          toolbar: false,
+        },
+      },
     };
   },
   props: {
@@ -96,10 +104,36 @@ export default {
         console.log(e);
       }
     },
+    reply() {
+      this.$emit("reply");
+    },
+    resend() {
+      this.$emit("resend");
+    },
+    deleteMessage() {
+      ElMessageBox.confirm("삭제하시겠습니까?", "경고", {
+        confirmButtonText: "예",
+        cancelButtonText: "아니오",
+        type: "warning",
+      }).then(() => {
+        ElMessage({
+          type: "info",
+          message: "삭제되었습니다",
+        });
+        this.$emit("deleteMessage");
+      });
+    },
+    returnToMain() {
+      this.$emit("returnToMain");
+    },
   },
   mounted() {
     this.pageInit();
   },
 };
 </script>
-<style lang=""></style>
+<style scoped>
+.bigSize {
+  height: 500px;
+}
+</style>

@@ -76,6 +76,7 @@ export default {
           icon: "Briefcase",
           submenus: [
             { label: "로그인 수정", index: "changeCurrent", path: "dev" },
+            { label: "Quill", index: "QuillMessengerTest", path: "private" },
           ],
         },
       ],
