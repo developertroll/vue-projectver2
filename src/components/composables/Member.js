@@ -23,6 +23,20 @@ export const Member = shallowReactive({
       rank: 1,
       department: 1,
     },
+    {
+      index: 3,
+      name: "이영자",
+      email: "ZeroChild@test.test",
+      rank: 2,
+      department: 2,
+    },
+    {
+      index: 4,
+      name: "조맹구",
+      email: "blindsphere@test.test",
+      rank: 3,
+      department: 3,
+    },
   ],
   template: {
     index: "",
@@ -69,6 +83,7 @@ export const Member = shallowReactive({
       };
       list.push(member);
     });
+    list.find((el) => el.key === this.currentMember).disabled = true;
     return list;
   },
   CallTeamTree() {
@@ -104,5 +119,15 @@ export const Member = shallowReactive({
   },
   getCurrentMemberName() {
     return Member.findMemberByIndex(Member.currentMember).name;
+  },
+  getMemberByDepartment(department) {
+    const target = this.callMembers().filter(
+      (el) => el.department === department
+    );
+    const result = [];
+    target.forEach((el) => {
+      result.push(el.index);
+    });
+    return result;
   },
 });

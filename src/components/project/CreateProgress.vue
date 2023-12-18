@@ -45,7 +45,6 @@ export default {
         etc: item.비고,
         index: this.parentWork,
       });
-      console.log(newWork, "CreateProgress에서 발생");
       this.$emit("saveForm", newWork);
     },
   },

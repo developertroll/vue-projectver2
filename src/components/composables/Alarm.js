@@ -70,7 +70,7 @@ export const Alarm = shallowReactive({
     const target = this.List.filter(
       (el) => el.type.includes(type) && el.to === member
     );
-    console.log(target);
+
     const result = [];
     target.forEach((el) => {
       result.push({
@@ -112,11 +112,10 @@ export const Alarm = shallowReactive({
     return result;
   },
   readMinifiedAlarmList(type, member) {
-    console.log(type, member);
     const target = this.List.filter(
       (el) => el.to === member && el.status === true && el.type.includes(type)
     );
-    console.log(target, "타겟");
+
     target.forEach((el) => {
       el.status = false;
     });

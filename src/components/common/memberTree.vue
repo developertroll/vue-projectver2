@@ -1,10 +1,14 @@
 <template lang="">
-  <el-tree
-    ref="tree"
-    :data="memberData"
-    @node-click="onNodeClick"
-    node-key="key"
-  ></el-tree>
+  <div>
+    <el-card shadow="never">
+      <el-tree
+        ref="tree"
+        :data="memberData"
+        @node-click="onNodeClick"
+        node-key="key"
+      ></el-tree>
+    </el-card>
+  </div>
 </template>
 <script>
 import { Member } from "@/components/composables/Member";
@@ -39,7 +43,6 @@ export default {
       if (data.children) {
         return;
       } else {
-        console.log(data);
         this.$refs.tree.setCurrentKey(data.key);
         this.$emit("onNodeClick", Member.findMemberByIndex(data.key));
       }
@@ -50,7 +53,7 @@ export default {
       } else {
         this.$refs.tree.setCurrentkey([], false);
       }
-      console.log(this.$refs.tree.getCurrentKey());
+
       // this.$refs.tree.clearHighlight(); // Call clearHighlight method on el-tree component
     },
   },

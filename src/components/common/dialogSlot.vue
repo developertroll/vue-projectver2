@@ -39,7 +39,6 @@ export default {
       this.dialogVisible = false;
     },
     saveForm(item) {
-      console.log("dialog에서 실행됨");
       this.$emit("saveForm", item);
       this.closeDialog();
     },

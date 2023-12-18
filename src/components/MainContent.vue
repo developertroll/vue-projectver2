@@ -96,6 +96,11 @@ export default {
           );
           this.handlerExecuted = false;
           break;
+        case "MessageMain":
+          this.targetComponent = defineAsyncComponent(() =>
+            import(`./private/MessengerMain.vue`)
+          );
+          break;
         // case "org":
         //   this.targetComponent = defineAsyncComponent(() =>
         //     import(`./layout/org.vue`)

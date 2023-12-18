@@ -1,10 +1,6 @@
 <template lang="">
   <div>
-    <el-result
-      icon="success"
-      title="작성 완료"
-      sub-title="결재라인에 따라 결재가 전달되었습니다."
-    >
+    <el-result icon="success" title="작성 완료" :sub-Title="subTitle">
       <template #extra>
         <el-button type="primary" @click="backToMain">돌아가기</el-button>
       </template>
@@ -22,6 +18,15 @@ export default {
     };
   },
   inject: ["finishType"],
+  computed: {
+    subTitle() {
+      if (this.finishType === "MessageMain") {
+        return "메세지가 전달되었습니다.";
+      } else {
+        return "결재라인에 따라 결재가 전달되었습니다.";
+      }
+    },
+  },
   methods: {
     backToMain() {
       this.$emit("backToMain", this.finishType);

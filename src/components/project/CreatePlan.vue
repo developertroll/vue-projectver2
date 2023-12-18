@@ -103,7 +103,7 @@
       <showProject :projectData="protoProject" :isSaved="false" />
     </div>
     <div>
-      <el-button type="primary" @click="debug">디버그</el-button>
+      <!-- <el-button type="primary" @click="debug">디버그</el-button> -->
       <el-button type="primary" @click="active--" :disabled="active === 0"
         >이전</el-button
       >
@@ -257,7 +257,6 @@ export default {
         // protoProject를 parentProject에 assign했을때 parentProject와 같은지 비교
         // 같으면 false, 다르면 true
         const result = Object.assign({}, parentProject, this.protoProject);
-        console.log(result);
         const isEdited = Object.keys(result).some(
           (key) => result[key] !== parentProject[key]
         );

@@ -64,6 +64,7 @@ export default {
         master: "작성자",
         status: "상태",
       },
+      index: null,
     };
   },
   methods: {
@@ -71,10 +72,9 @@ export default {
       if (this.isSaved) {
         const result = Project.findProjectByIndex(this.projectIndex);
         const { index, ...newResult } = result;
-        console.log(newResult);
+        this.index = index;
         newResult.master = Member.findMemberByIndex(newResult.master).name;
         this.project = newResult;
-        console.log(index);
       }
     },
   },

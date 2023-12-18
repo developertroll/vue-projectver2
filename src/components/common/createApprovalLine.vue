@@ -25,6 +25,11 @@
     <el-row class="card-box">
       <el-col :span="6">
         <el-card shadow="never" class="card-box-1">
+          <template #header>
+            <div class="clearfix">
+              <span>조직도</span>
+            </div>
+          </template>
           <memberTree
             @onNodeClick="checkedTable"
             ref="memberT"
@@ -42,6 +47,11 @@
       </el-col>
       <el-col :span="10">
         <el-card shadow="never">
+          <template #header>
+            <div class="clearfix">
+              <span>결재라인</span>
+            </div>
+          </template>
           <el-table
             ref="table"
             :data="ApprovalLine"
@@ -106,7 +116,6 @@ export default {
     checkedTable(data) {
       this.Checked = [];
       this.clearSelect();
-      console.log(data);
       this.Checked.push(data);
     },
     handleSelect(data) {
@@ -115,7 +124,6 @@ export default {
         return;
       }
       this.Checked = [];
-      console.log(data);
       this.Select = [data];
     },
     changeUp() {
@@ -151,14 +159,12 @@ export default {
         this.ApprovalLine.filter((e) => e.index === this.Checked[0].index)
           .length > 0
       ) {
-        console.log("이미 존재");
         return;
       } else {
         this.ApprovalLine.push(this.Checked[0]);
       }
       this.Checked = [];
       this.$refs.memberT.clearHighlight();
-      console.log(this.ApprovalLine);
     },
     removeLine() {
       if (this.Select.length === 0) {

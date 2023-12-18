@@ -2,7 +2,7 @@
   <div class="alignCenter">
     <el-transfer
       v-model="member"
-      :data="memberData"
+      :data="transferTable"
       :titles="['직원', '참여자']"
       filterable
     />
@@ -27,21 +27,35 @@ export default {
       type: Array,
       default: () => [],
     },
+    disableTable: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       member: [],
+      transferTable: [],
     };
   },
   methods: {
     saveMember() {
       this.$emit("save", this.member);
     },
+    transferInit() {
+      this.memberData.forEach((el) => {
+        if (this.disableTable.includes(el.key)) {
+          el.disabled = true;
+        }
+        this.transferTable.push(el);
+      });
+    },
   },
   mounted() {
     if (this.parentData.length !== 0) {
       this.member = this.parentData;
     }
+    this.transferInit();
   },
 };
 </script>

@@ -91,6 +91,12 @@ CreatePlan 페이지 완성. 이제 프로젝트와 결재라인 만들어지는
 + 만약 시간적 여유가 된다면 이런 메일 형식의 메시지와 일반 문자메시지 식 메시지를 구분해서 만들기.
 ```
 
+### 20231218 일지
+
+```
+메세지 보내기 및 보기 작성 완료. 보기 파트는 개선이 필요함(css적인 면이 하나도 안되어있음). 그리고 메시지 답장 기능 추가 필요.
+```
+
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).

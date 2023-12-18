@@ -17,7 +17,7 @@
     </el-form-item>
   </el-form>
   <el-button type="primary" @click="saveForm">저장</el-button>
-  <el-button type="primary" @click="debug">디버그</el-button>
+  <!-- <el-button type="primary" @click="debug">디버그</el-button> -->
 </template>
 <script>
 export default {
