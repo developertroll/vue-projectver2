@@ -7,8 +7,8 @@
       <!-- content는 QuillEditor사용해서 내용 받기. 현재는 html로 받지만 delta 값 봐서 delta로 받는게 더 나을수도 있음 -->
       <!-- update는 현재시간으로 자동으로 받기 -->
       <el-form-item label="받는사람">
-        <el-input v-model="showTo" readonly>
-          <template #append>
+        <el-input v-model="showTo" readonly :disabled="replyCheck">
+          <template #append v-if="!replyCheck">
             <dialogSlot title="배정하기" ref="dialog">
               <template #default>
                 <assignMember @saveMember="addressMember" where="to" />
@@ -39,18 +39,18 @@
           <!-- 크기 조절 방법이 없을 경우 dialog처리하거나 tiptab을 이용해야 할수도 있음 -->
           <QuillEditor
             v-model:content="form.content"
+            contentType="html"
             theme="snow"
             toolbar="essential"
             placeholder="줄이 늘어날수록 창이 자동으로 늘어납니다"
             ref="Editor"
-            @ready="getContent"
           />
         </div>
       </el-form-item>
       <el-form-item>
         <div class="CenterButtons">
           <el-button type="primary" @click="sendMessage">작성</el-button>
-          <el-button type="primary">취소</el-button>
+          <el-button type="primary" @click="returnToMain">취소</el-button>
         </div>
       </el-form-item>
     </el-form>
@@ -61,6 +61,7 @@ import { Member } from "@/components/composables/Member";
 import dialogSlot from "@/components/common/dialogSlot.vue";
 import assignMember from "@/components/common/assignMember.vue";
 import { Message } from "@/components/composables/Message";
+import { ElMessageBox } from "element-plus";
 export default {
   name: "createMessage",
   components: {
@@ -71,6 +72,10 @@ export default {
     parentIndex: {
       type: Number,
       required: true,
+    },
+    replyCheck: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -120,24 +125,34 @@ export default {
       this.$refs.dialog.closeDialog();
     },
     sendMessage() {
-      this.$emit("saveMessage", this.form);
+      this.$emit("editMessage", this.form);
     },
     giveCurrentMessage() {
       const OGMessage = Message.findMessageByIndex(this.parentIndex);
-      this.form.to = OGMessage.from;
-      this.form.form = OGMessage.to;
-      this.form.title = `RE: ${OGMessage.title}`;
-      // this.form.content.insert("===============================\n\n\n\n", {});
-      // this.form.content.insert(`보낸사람: ${OGMessage.from}\n`, {});
-      // this.form.content.insert(`받는사람: ${OGMessage.to}\n`, {});
-      // this.form.content.insert(`참조: ${OGMessage.reference}\n`, {});
-      // this.form.content.insert(`보낸시간: ${OGMessage.update}\n`, {});
+      const OGOG = Message.findOriginalMessageByIndex(this.parentIndex);
+      console.log(OGOG.from, OGOG.to);
+      this.form.to = this.replyCheck ? OGOG.from : "";
+      this.form.form = OGOG.to;
+      this.showTo = this.replyCheck
+        ? `${Member.findMemberByIndex(OGOG.from).name}(${
+            Member.findMemberByIndex(OGOG.from).department
+          })`
+        : "";
+      this.form.title = this.replyCheck
+        ? `RE: ${OGMessage.title}`
+        : `FW: ${OGMessage.title}`;
+      this.form.content = `<p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p>=============================</p><p>보낸사람:${OGMessage.from}</p><p>받는사람:${OGMessage.to}</p><p>참조:${OGMessage.reference}</p><p><br/></p><p><br/></p>${OGMessage.content}`;
     },
-    getContent() {
-      const OGMessage = Message.findMessageByIndex(this.parentIndex);
-      const newForm = { ...OGMessage };
-      this.form.content = newForm.content;
-      this.$refs.Editor.setContents(newForm.content);
+    returnToMain() {
+      ElMessageBox.confirm("정말 취소하시겠습니까?", "경고", {
+        confirmButtonText: "예",
+        cancelButtonText: "아니오",
+        type: "warning",
+      })
+        .then(() => {
+          this.$emit("returnToMain");
+        })
+        .catch(() => {});
     },
   },
   mounted() {

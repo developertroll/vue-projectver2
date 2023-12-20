@@ -5,44 +5,36 @@
       <!-- 뒤로가기(목록), 삭제, 오른쪽에는 자신에게 온 Message중에서 이게 몇번째인지 -->
       <el-row>
         <el-col :span="8">
-          <el-button-group>
-            <el-button type="primary" @click="returnToMain">목록</el-button>
-            <el-button type="primary" @click="deleteMessage"
-              >삭제</el-button
-            ></el-button-group
+          <el-button type="primary" @click="returnToMain"
+            >목록</el-button
           ></el-col
         >
         <el-col :span="4" :offset="12">{{ tempWhere }}</el-col>
       </el-row>
     </div>
-    <div class="messageTitle">
-      {{ title }}
-    </div>
-    <div>
+    <el-divider></el-divider>
+    <div v-for="reply in entireChain" :key="reply.index">
       <!-- from아바타, from, 보낸시각(update), dropdown(답장,전달) -->
       <el-row>
-        <el-col :span="4">보낸 사람</el-col>
-        <el-col :span="4" v-if="isReference">받는 사람</el-col>
+        <el-col :span="4"
+          ><userAvatar :parentMember="reply.from" v-if="entireChain.length > 0"
+        /></el-col>
+        <el-col :span="4" :offset="16">{{ reply.update }}</el-col>
       </el-row>
-      <el-row v-if="isReference">
-        <el-col :span="4"><userAvatar :parentMember="originalFrom" /></el-col>
-        <el-col :span="4"><userAvatar :parentMember="originalTo" /></el-col>
-        <el-col :span="4" :offset="12">{{ messageData.update }}</el-col>
-        <!-- 참조라서 받은 경우 이곳에 to도 avatar처리해서 보여주기 -->
-      </el-row>
-      <el-row v-else>
-        <el-col :span="4"><userAvatar :parentMember="originalFrom" /></el-col>
-        <el-col :span="4" :offset="16">{{ messageData.update }}</el-col>
-        <!-- 참조라서 받은 경우 이곳에 to도 avatar처리해서 보여주기 -->
-      </el-row>
-    </div>
-    <div class="bigSize">
       <!-- 내용 -->
-      <div v-html="content"></div>
+      <el-divider></el-divider>
+      <div v-html="cutContent(reply.content)"></div>
+      <el-divider></el-divider>
     </div>
     <div>
-      <!-- 답장, 전달 큰 버튼 -->
-      <el-button type="primary" @click="reply" size="large">답장</el-button>
+      <!-- 답장(본인일경우), 전달 큰 버튼 -->
+      <el-button
+        type="primary"
+        @click="reply"
+        size="large"
+        v-if="lastWhoCheck()"
+        >답장</el-button
+      >
       <el-button type="primary" @click="resend" size="large">전달</el-button>
     </div>
   </div>
@@ -60,8 +52,8 @@ export default {
   },
   data() {
     return {
-      title: "",
-      content: null,
+      entireChain: [],
+      currentMember: Member.currentMember,
     };
   },
   props: {
@@ -72,28 +64,18 @@ export default {
   },
   computed: {
     messageData() {
-      return Message.findMessageByIndex(this.parentIndex);
-    },
-    originalFrom() {
-      return Message.findOriginalMessageByIndex(this.parentIndex).from;
-    },
-    originalTo() {
-      return Message.findOriginalMessageByIndex(this.parentIndex).to;
+      return Message.getReplyChainArray(this.parentIndex);
     },
     tempWhere() {
       return Message.calculateMessageCountByMessage(this.parentIndex);
     },
-    isReference() {
-      return (
-        Message.findOriginalMessageByIndex(this.parentIndex).to !==
-        Member.currentMember
-      );
+    OG() {
+      return Message.findOriginalMessageByIndex(this.parentIndex);
     },
   },
   methods: {
     pageInit() {
-      this.title = this.messageData.title;
-      this.content = this.messageData.content;
+      this.entireChain = this.messageData;
     },
     debug() {
       console.log(this.messageData);
@@ -120,6 +102,26 @@ export default {
     },
     returnToMain() {
       this.$emit("returnToMain");
+    },
+    // content의 내용을 기본 this.content과 비교해서 <p>=========</p>이하 내용을 모두 제거하기
+    // 이후 남은 내용을 return
+    cutContent(content) {
+      let temp = content;
+      let index = temp.indexOf("<p>=========");
+      if (index !== -1) {
+        temp = temp.substring(0, index);
+      }
+      return temp;
+    },
+    checkWho(index) {
+      return Number(Message.findOriginalMessageByIndex(index).from);
+    },
+    lastWhoCheck() {
+      return (
+        this.entireChain.length > 0 &&
+        this.entireChain[this.entireChain.length - 1].from !==
+          this.currentMember
+      );
     },
   },
   mounted() {

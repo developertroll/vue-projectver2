@@ -3,11 +3,13 @@
   <div>
     <el-badge :value="alarmCount" :max="10" :hidden="hiddenCount">
       <el-dropdown>
-        <el-icon>
+        <el-icon size="large">
           <Bell />
         </el-icon>
         <template #dropdown>
-          <el-dropdown-menu>
+          <el-dropdown-menu
+            v-if="alarmData.filter((e) => e.count > 0).length > 0"
+          >
             <el-dropdown-item
               v-for="item in alarmData.filter((e) => e.count > 0)"
               :key="item.type"
@@ -18,6 +20,9 @@
               왔습니다.
             </el-dropdown-item>
           </el-dropdown-menu>
+          <el-dropdown-item v-else disabled>
+            새로운 알람이 없습니다.</el-dropdown-item
+          >
         </template>
       </el-dropdown>
     </el-badge>
@@ -26,7 +31,13 @@
 
 <script>
 import { Alarm } from "@/components/composables/Alarm";
-import { Bell, Briefcase, Document, Setting } from "@element-plus/icons-vue";
+import {
+  Bell,
+  Briefcase,
+  Document,
+  Setting,
+  Message,
+} from "@element-plus/icons-vue";
 export default {
   name: "AlarmDropdown",
   components: {
@@ -34,6 +45,7 @@ export default {
     Briefcase,
     Document,
     Setting,
+    Message,
   },
   data() {
     return {
@@ -41,6 +53,7 @@ export default {
         project: "프로젝트",
         approval: "결재",
         work: "업무",
+        message: "메세지",
       },
     };
   },
@@ -74,6 +87,8 @@ export default {
           return "Document";
         case "work":
           return "Setting";
+        case "message":
+          return "Message";
         default:
           return "Bell";
       }

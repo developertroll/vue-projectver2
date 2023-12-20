@@ -22,6 +22,13 @@
           @pageMove="moveToMain"
         />
       </el-tab-pane>
+      <el-tab-pane label="메시지" name="message">
+        <AlarmTable
+          :parentType="'message'"
+          :CurrentMember="CurrentMember"
+          @pageMove="moveToMain"
+        />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -48,6 +55,12 @@ export default {
           break;
         case "work":
           this.$emit("backToMain", "WorkPage");
+          break;
+        case "approval":
+          this.$emit("backToMain", "ApprovalMain");
+          break;
+        case "message":
+          this.$emit("backToMain", "MessageMain");
           break;
         default:
           break;

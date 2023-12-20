@@ -38,6 +38,7 @@ export default {
 <style>
 .el-header {
   background: #79bbff;
+  width: 100%;
   color: #fff;
   display: flex;
   justify-content: space-between;

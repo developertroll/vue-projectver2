@@ -1,7 +1,21 @@
-<template lang="">
-  <div>
-    <div @click="clickedEvent">일정관리 시스템</div>
-    <AlarmDropdown :parentMember="CurrentMember" @alarmSelect="alarmSelect" />
+<template>
+  <div class="headercontanier">
+    <el-row>
+      <el-col :span="4">
+        <div @click="clickedEvent">일정관리 시스템</div>
+      </el-col>
+      <el-col :span="4" :offset="14">
+        <div>안녕하세요,{{ CurrentMemberName }}님</div>
+      </el-col>
+      <el-col :span="1">
+        <div>
+          <AlarmDropdown
+            :parentMember="CurrentMember"
+            @alarmSelect="alarmSelect"
+          />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script>
@@ -33,6 +47,7 @@ export default {
     return {
       alarmCount: 0,
       CurrentMember: Member.currentMember,
+      CurrentMemberName: Member.getCurrentMemberName(),
     };
   },
   computed: {
@@ -45,4 +60,8 @@ export default {
   },
 };
 </script>
-<style lang=""></style>
+<style>
+.headercontanier {
+  width: 100%;
+}
+</style>

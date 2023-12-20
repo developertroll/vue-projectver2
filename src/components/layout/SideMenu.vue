@@ -68,6 +68,7 @@ export default {
           submenus: [
             { label: "알람", index: "AlarmMain", path: "private" },
             { label: "메세지", index: "MessengerMain", path: "private" },
+            { label: "그룹방", index: "TalkMain", path: "Talk" },
           ],
         },
         {

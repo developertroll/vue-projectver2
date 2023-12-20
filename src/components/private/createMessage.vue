@@ -42,14 +42,14 @@
             theme="snow"
             toolbar="essential"
             placeholder="줄이 늘어날수록 창이 자동으로 늘어납니다"
-            ref="myQuillEditor"
+            contentType="html"
           />
         </div>
       </el-form-item>
       <el-form-item>
         <div class="CenterButtons">
           <el-button type="primary" @click="sendMessage">작성</el-button>
-          <el-button type="primary">취소</el-button>
+          <el-button type="primary" @click="returnToMain">취소</el-button>
         </div>
       </el-form-item>
     </el-form>
@@ -59,6 +59,7 @@
 import { Member } from "@/components/composables/Member";
 import dialogSlot from "@/components/common/dialogSlot.vue";
 import assignMember from "@/components/common/assignMember.vue";
+import { ElMessageBox } from "element-plus";
 export default {
   name: "createMessage",
   components: {
@@ -113,6 +114,17 @@ export default {
     },
     sendMessage() {
       this.$emit("saveMessage", this.form);
+    },
+    returnToMain() {
+      ElMessageBox.confirm("정말 취소하시겠습니까?", "경고", {
+        confirmButtonText: "예",
+        cancelButtonText: "아니오",
+        type: "warning",
+      })
+        .then(() => {
+          this.$emit("returnToMain");
+        })
+        .catch(() => {});
     },
   },
 };
