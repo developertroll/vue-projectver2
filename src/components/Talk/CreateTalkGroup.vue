@@ -7,7 +7,7 @@
       <el-form-item label="멤버">
         <el-input v-model="translatedMember" readonly>
           <template #append>
-            <dialogSlot title="추가">
+            <dialogSlot title="추가" ref="dialog">
               <template #default>
                 <memberTransfer @save="saveMember" :parentData="form.member" />
               </template>
@@ -52,6 +52,7 @@ export default {
     saveMember(item) {
       this.form.member = item;
       this.form.member.push(Member.currentMember);
+      this.$refs.dialog.closeDialog();
       this.translateMember = [];
       this.translateMemberTable(item);
     },

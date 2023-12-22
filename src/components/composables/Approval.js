@@ -3,6 +3,7 @@ import moment from "moment";
 import { Project } from "./Project";
 import { Work } from "./Work";
 import { Alarm } from "./Alarm";
+import { Member } from "./Member";
 
 export const Approval = shallowReactive({
   List: localStorage.getItem("approvalList")
@@ -17,21 +18,6 @@ export const Approval = shallowReactive({
     status: "",
     writer: "",
   },
-  // createApproval(item) {
-  //   const approval = {
-  //     index: this.List.length,
-  //     parentIdx: item.parentIdx,
-  //     parentType: item.parentType,
-  //     update: item.update,
-  //     master: item.master,
-  //     status: "결재요청",
-  //     writer: item.writer,
-  //     parentApprovalIndex: item.parentApprovalIndex
-  //       ? item.parentApprovalIndex
-  //       : null,
-  //   };
-  //   this.List.push(approval);
-  // },
   createApproval(project) {
     if (project.ApprovalLine.length > 1) {
       for (let i = 0; i < project.ApprovalLine.length; i++) {
@@ -54,7 +40,7 @@ export const Approval = shallowReactive({
           );
           continue;
         }
-        // 0 1 2
+        // 0 1 2를 0,1 / 1,2 식으로 배분
         const approval = {
           index: this.List.length,
           parentIdx: project.index,
@@ -145,13 +131,25 @@ export const Approval = shallowReactive({
     }
   },
   callApprovalList(status) {
-    return this.List.filter((el) => el.status === status);
+    if (status === "대기") {
+      return this.List.filter(
+        (el) =>
+          el.status === status &&
+          (el.master === Member.currentMember ||
+            el.writer === Member.currentMember)
+      );
+    }
+    return this.List.filter(
+      (el) => el.status === status && el.master === Member.currentMember
+    );
   },
   callAllList() {
     return this.List;
   },
   findApprovalByIndex(index) {
-    return this.List.find((el) => el.index === index);
+    return this.List.find(
+      (el) => el.index === index && el.master === Member.currentMember
+    );
   },
   findparentProjectIndexByIndex(index) {
     return this.List.find((el) => el.index === index).parentIdx;
@@ -225,6 +223,7 @@ export const Approval = shallowReactive({
       console.log(e);
     }
   },
+  // 부모 인덱스와 결재자 인덱스를 받아서 결재 상태를 반환
   getStatusByParentIdxMember(parentIdx, memberIdx) {
     const target = this.List.find(
       (el) => el.parentIdx === parentIdx && el.master === memberIdx

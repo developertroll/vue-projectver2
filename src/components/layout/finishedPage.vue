@@ -5,7 +5,6 @@
         <el-button type="primary" @click="backToMain">돌아가기</el-button>
       </template>
     </el-result>
-    {{ finishType }}
   </div>
 </template>
 <script>

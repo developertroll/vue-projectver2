@@ -6,4 +6,7 @@ module.exports = defineConfig({
       overlay: false,
     },
   },
+  publicPath:
+    process.env.NODE_ENV === "production" ? "/vue-project-Build" : "/",
+  outputDir: "docs",
 });

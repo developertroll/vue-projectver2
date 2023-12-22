@@ -9,7 +9,10 @@
     <el-scrollbar max-height="400px">
       <div v-for="Message in MessageData" :key="Message.index">
         <div>
-          <TalkTemplate :MessageIndex="Message.index" />
+          <TalkTemplate
+            :MessageIndex="Message.index"
+            :checkChain="checkChainMessage(Message.index)"
+          />
         </div>
       </div>
     </el-scrollbar>
@@ -62,6 +65,17 @@ export default {
     },
     returnToMain() {
       this.$emit("returnToMain");
+    },
+    // 이 함수는 MessageData에서 해당 index의 index를 찾고 그 index의 owner가 이전 index의 owner와 같은지 확인한다.
+    checkChainMessage(index) {
+      const targetIndex = this.MessageData.findIndex(
+        (el) => el.index === index
+      );
+      console.log(targetIndex);
+      if (targetIndex === 0) return false;
+      const targetOwner = this.MessageData[targetIndex].owner;
+      const previousOwner = this.MessageData[targetIndex - 1].owner;
+      return targetOwner === previousOwner;
     },
   },
   mounted() {

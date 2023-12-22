@@ -1,7 +1,7 @@
 <template lang="">
   <div>
     <div v-if="isMine">
-      <el-row>
+      <el-row v-if="!checkChain">
         <el-col :span="4" :offset="20">
           <userAvatar :parentMember="MessageData.owner" />
         </el-col>
@@ -20,7 +20,7 @@
       </el-row>
     </div>
     <div v-else>
-      <el-row>
+      <el-row v-if="!checkChain">
         <el-col :span="4">
           <userAvatar :parentMember="MessageData.owner" />
         </el-col>
@@ -55,6 +55,10 @@ export default {
       type: Number,
       // required: true,
     },
+    checkChain: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     MessageData() {
@@ -74,9 +78,7 @@ export default {
       if (moment(this.MessageData.update).isSame(today, "day")) {
         this.update = moment(this.MessageData.update).format("HH:mm:ss");
       } else {
-        this.update = moment(this.MessageData.update).format(
-          "YYYY-MM-DD HH:mm:ss"
-        );
+        this.update = moment(this.MessageData.update).format("YYYY-MM-DD");
       }
     },
   },

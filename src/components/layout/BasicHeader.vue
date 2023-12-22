@@ -47,12 +47,14 @@ export default {
     return {
       alarmCount: 0,
       CurrentMember: Member.currentMember,
-      CurrentMemberName: Member.getCurrentMemberName(),
     };
   },
   computed: {
     alarmData() {
       return Alarm.getMinifiedAlarmList(Member.currentMember);
+    },
+    CurrentMemberName() {
+      return Member.getCurrentMemberName();
     },
   },
   mounted() {

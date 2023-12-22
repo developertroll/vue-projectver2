@@ -8,8 +8,7 @@
         :value="item.key"
       />
     </el-select>
-    {{ memberData }}
-    {{ currentMember }}
+    <div>현재 선택된 직원: {{ currentMemberName }}</div>
   </div>
 </template>
 <script>
@@ -24,6 +23,9 @@ export default {
   computed: {
     memberData() {
       return Member.callTransferMember();
+    },
+    currentMemberName() {
+      return Member.getCurrentMemberName();
     },
   },
   watch: {
